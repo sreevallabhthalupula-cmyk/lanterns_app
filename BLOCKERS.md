@@ -46,3 +46,32 @@ output on a device.
 Left as-is: `pdf-report.js` generates English-only reports regardless of the UI
 language setting. If you want this closed, it needs a font-embedding pass, not a
 find-and-replace.
+
+---
+
+## Final sanity sweep — found why the Netlify URL has stayed blank
+
+Not a decision, a root-cause finding: `netlify_response.json` in the repo root contains
+`{"code":401,"message":"Access Denied"}`. Somewhere in an earlier session, a deploy to
+Netlify was attempted (API or CLI) and rejected for bad/missing auth — that's almost
+certainly the reason the Netlify URL has stayed blank across every session, not a task
+nobody got to.
+
+There's also a `netlify_deploy/` folder in the repo root — git-ignored, no commit
+history, a local build snapshot from whenever that deploy attempt happened. It still
+has the entire old branding baked in (old accent blue, "DR Screening" as the app name,
+old app icons) because it predates this session's rebrand and palette work, and nothing
+in this session touched it since it isn't part of the live app (index.html/style.css/
+app.js at the repo root are what `sw.js` actually caches and what Chrome serves).
+
+I didn't touch either file: fixing the 401 needs your actual Netlify credentials (site
+ID + auth token, or re-running whatever CLI login this came from), which I don't have
+and wouldn't enter even if I did — and I'm not going to attempt a live deploy to a
+public URL without you confirming that's what you want. Once you've got valid Netlify
+auth sorted, `netlify_deploy/` should just be regenerated fresh from the current repo
+root rather than patched — it's a stale, out-of-band, stale-by-months copy of what
+`netlify_deploy/index.html` etc. actually reflect now, and quietly patching branding
+into a build artifact that's about to be regenerated isn't worth the effort. Delete it
+and rebuild once the real deploy target is known — worth a real deploy pipeline
+(Netlify CLI in CI, or connecting the GitHub repo directly in Netlify's dashboard so it
+builds from `main` automatically) rather than another manual `netlify_deploy/` folder.

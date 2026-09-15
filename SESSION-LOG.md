@@ -99,12 +99,18 @@ and the still-blank Netlify URL remain open from before this session; none of th
 things I could make progress on without either your device or real fundus images,
 neither of which I have.
 
+## Final sanity sweep (re-ran the old-color/old-name greps as instructed)
+
+Fixed a stray `#2f8fd6` in `test-tfjs-model.html` (an isolated dev test harness, not
+part of the shipped app). Found the actual reason the Netlify URL has stayed blank
+across sessions — see the last entry in BLOCKERS.md, it's a real finding, not a guess.
+
 ## What's still open
 
 - Everything in [ANDROID-TEST-CHECKLIST.md](ANDROID-TEST-CHECKLIST.md) — run this
   first.
-- The two calls in [BLOCKERS.md](BLOCKERS.md) — logo mark and PDF i18n — need your
-  actual sign-off, not just a skim past this log.
+- The three items in [BLOCKERS.md](BLOCKERS.md) — logo mark, PDF i18n, and the
+  Netlify 401 — need your actual attention, not just a skim past this log.
 - MATLAB-side model work (EfficientNet-b0 regression head, U-Net segmentation) is
   still entirely on your side — no MATLAB in this environment, unchanged from before
   this session.
