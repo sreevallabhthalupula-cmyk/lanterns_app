@@ -18,6 +18,10 @@ const APP_LAST_UPDATED = '2026-09-15';
 const screenStack = [];
 
 function showScreen(id, opts = {}) {
+  const leaving = document.querySelector('.screen.active');
+  if (leaving && leaving.id === 'screen-capture' && id !== 'screen-capture') {
+    stopCamera();
+  }
   document.querySelectorAll('.screen').forEach((el) => el.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 
