@@ -8,6 +8,10 @@ const STORAGE_KEY = 'dr_pwa_cases';
 const OPERATOR_KEY = 'dr_pwa_operator';
 const MAX_STORED_IMAGE_DIM = 800; // downscale captured images before persisting to localStorage
 
+// Bump on every meaningful release; shown on Home (Section 4: version/changelog footer).
+const APP_VERSION = '1.3.0';
+const APP_LAST_UPDATED = '2026-09-15';
+
 // ---------------------------------------------------------------------
 // Navigation
 // ---------------------------------------------------------------------
@@ -797,6 +801,8 @@ document.getElementById('welcomeSkipBtn').addEventListener('click', () => {
 // (Section 3: functional, not just decorative), then routes to
 // Welcome (first run) or straight to Operator/Home.
 // ---------------------------------------------------------------------
+document.getElementById('versionFooter').textContent = `v${APP_VERSION} · last updated ${APP_LAST_UPDATED}`;
+
 (async function init() {
   const splashStart = Date.now();
   const MIN_SPLASH_MS = 500;
