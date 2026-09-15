@@ -66,6 +66,10 @@ function updateOperatorBadge() {
     `${currentOperator.employeeId} · ${currentOperator.facility}`;
 }
 
+document.querySelectorAll('input[name="op_language"]').forEach((input) => {
+  input.addEventListener('change', (e) => setLanguage(e.target.value));
+});
+
 document.getElementById('operatorForm').addEventListener('submit', (e) => {
   e.preventDefault();
 
@@ -148,10 +152,10 @@ function renderDashboard() {
   const pendingCount = cases.filter((c) => c.reviewStatus === 'Pending Ophthalmologist Review').length;
 
   const tiles = [
-    { label: "Today's screenings", value: todayCount },
-    { label: "This week's screenings", value: weekCount },
-    { label: 'Referral rate', value: `${referralRate}%` },
-    { label: 'Pending review', value: pendingCount },
+    { label: t('dashboard.today'), value: todayCount },
+    { label: t('dashboard.week'), value: weekCount },
+    { label: t('dashboard.referralRate'), value: `${referralRate}%` },
+    { label: t('dashboard.pendingReview'), value: pendingCount },
   ];
 
   document.getElementById('metricGrid').innerHTML = tiles
@@ -559,15 +563,11 @@ function renderCaseDetail(caseId) {
     </table>
 
     <div class="card" style="margin-top:16px;padding:16px">
-      <h2 style="font-size:15px">Reviewer Actions</h2>
-      <div class="notice demo">
-        Simulated human-in-the-loop review step for demo purposes only — not a real
-        clinician authentication system or portal. Anyone with this device can click
-        these buttons.
-      </div>
+      <h2 style="font-size:15px">${t('reviewer.heading')}</h2>
+      <div class="notice demo">${t('reviewer.notice')}</div>
       <div class="btn-row">
-        <button class="btn success" id="approveBtn" ${c.reviewStatus === 'Approved' ? 'disabled' : ''}><svg class="icon"><use href="#icon-check"/></svg>Approve</button>
-        <button class="btn danger" id="flagBtn" ${c.reviewStatus === 'Flagged for Review' ? 'disabled' : ''}><svg class="icon"><use href="#icon-flag"/></svg>Flag for Review</button>
+        <button class="btn success" id="approveBtn" ${c.reviewStatus === 'Approved' ? 'disabled' : ''}><svg class="icon"><use href="#icon-check"/></svg>${t('reviewer.approve')}</button>
+        <button class="btn danger" id="flagBtn" ${c.reviewStatus === 'Flagged for Review' ? 'disabled' : ''}><svg class="icon"><use href="#icon-flag"/></svg>${t('reviewer.flag')}</button>
       </div>
     </div>
   `;
@@ -773,7 +773,8 @@ function showWelcomeSlide(i) {
   document.querySelectorAll('.welcome-dot').forEach((el, idx) => {
     el.classList.toggle('active', idx === i);
   });
-  document.getElementById('welcomeNextBtn').textContent = i === WELCOME_SLIDE_COUNT - 1 ? 'Get Started' : 'Next';
+  document.getElementById('welcomeNextBtn').textContent =
+    i === WELCOME_SLIDE_COUNT - 1 ? t('welcome.getStarted') : t('welcome.next');
 }
 
 document.getElementById('welcomeNextBtn').addEventListener('click', () => {
@@ -799,6 +800,19 @@ document.getElementById('welcomeSkipBtn').addEventListener('click', () => {
 (async function init() {
   const splashStart = Date.now();
   const MIN_SPLASH_MS = 500;
+
+  try {
+    await initI18n();
+    const savedLang = getCurrentLang();
+    const langInput = document.querySelector(`input[name="op_language"][value="${savedLang}"]`);
+    if (langInput) {
+      document.querySelectorAll('#screen-operator .radio-opt').forEach((o) => o.classList.remove('checked'));
+      langInput.checked = true;
+      langInput.closest('.radio-opt').classList.add('checked');
+    }
+  } catch (err) {
+    console.warn('i18n init failed, defaulting to English:', err);
+  }
 
   try {
     await loadModel();

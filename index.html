@@ -69,14 +69,14 @@
 <div id="app">
 
   <header class="topbar">
-    <button class="back-btn" id="backBtn"><svg class="icon icon-sm"><use href="#icon-arrow-left"/></svg>Back</button>
+    <button class="back-btn" id="backBtn"><svg class="icon icon-sm"><use href="#icon-arrow-left"/></svg><span data-i18n="nav.back">Back</span></button>
     <h1 id="topbarTitle">DR Screening</h1>
-    <span class="offline-chip" id="offlineChip">Offline</span>
+    <span class="offline-chip" id="offlineChip" data-i18n="offline.chip">Offline</span>
   </header>
 
   <div class="install-banner" id="installBanner">
-    <span>Install this app for offline use</span>
-    <button id="installBtn">Install</button>
+    <span data-i18n="install.text">Install this app for offline use</span>
+    <button id="installBtn" data-i18n="install.btn">Install</button>
   </div>
 
   <!-- WELCOME (first run only) -->
@@ -84,25 +84,25 @@
     <div class="card welcome-card">
       <div class="welcome-slide active" data-slide="0">
         <svg class="welcome-icon"><use href="#icon-eye"/></svg>
-        <h2>Screen for Diabetic Retinopathy</h2>
-        <p class="desc">Capture a retinal image and get an AI-assisted severity grade in seconds, right at the point of care.</p>
+        <h2 data-i18n="welcome.slide1.title">Screen for Diabetic Retinopathy</h2>
+        <p class="desc" data-i18n="welcome.slide1.body">Capture a retinal image and get an AI-assisted severity grade in seconds, right at the point of care.</p>
       </div>
       <div class="welcome-slide" data-slide="1">
         <svg class="welcome-icon"><use href="#icon-download"/></svg>
-        <h2>Works fully offline</h2>
-        <p class="desc">No internet connection needed after first install. Every model, every screen, every report generates entirely on this device — nothing is uploaded anywhere.</p>
+        <h2 data-i18n="welcome.slide2.title">Works fully offline</h2>
+        <p class="desc" data-i18n="welcome.slide2.body">No internet connection needed after first install. Every model, every screen, every report generates entirely on this device — nothing is uploaded anywhere.</p>
       </div>
       <div class="welcome-slide" data-slide="2">
         <svg class="welcome-icon"><use href="#icon-file-text"/></svg>
-        <h2>Built for the field</h2>
-        <p class="desc">Patient intake, capture, AI grading, PDF report, and ophthalmologist review — one continuous workflow for rural and district-level screening.</p>
+        <h2 data-i18n="welcome.slide3.title">Built for the field</h2>
+        <p class="desc" data-i18n="welcome.slide3.body">Patient intake, capture, AI grading, PDF report, and ophthalmologist review — one continuous workflow for rural and district-level screening.</p>
       </div>
       <div class="welcome-dots" id="welcomeDots">
         <span class="welcome-dot active"></span><span class="welcome-dot"></span><span class="welcome-dot"></span>
       </div>
       <div class="btn-row">
-        <button class="btn secondary" id="welcomeSkipBtn">Skip</button>
-        <button class="btn" id="welcomeNextBtn">Next</button>
+        <button class="btn secondary" id="welcomeSkipBtn" data-i18n="welcome.skip">Skip</button>
+        <button class="btn" id="welcomeNextBtn" data-i18n="welcome.next">Next</button>
       </div>
     </div>
   </section>
@@ -110,68 +110,75 @@
   <!-- OPERATOR PROFILE -->
   <section class="screen screen-light" id="screen-operator">
     <div class="card">
-      <h2>Operator Sign-In</h2>
-      <p class="desc">Local device profile — not real authentication, no password. Identifies who's using this device for the case record.</p>
+      <h2 data-i18n="operator.heading">Operator Sign-In</h2>
+      <p class="desc" data-i18n="operator.desc">Local device profile — not real authentication, no password. Identifies who's using this device for the case record.</p>
+      <label class="field">
+        <span class="label-text" data-i18n="operator.language">Language</span>
+        <div class="radio-row" data-group="op_language">
+          <label class="radio-opt checked"><input type="radio" name="op_language" value="en" checked /> English</label>
+          <label class="radio-opt"><input type="radio" name="op_language" value="hi" /> हिन्दी</label>
+        </div>
+      </label>
       <form id="operatorForm">
         <label class="field">
-          <span class="label-text">Operator name</span>
+          <span class="label-text" data-i18n="operator.name">Operator name</span>
           <input type="text" id="op_name" required />
         </label>
         <label class="field">
-          <span class="label-text">Employee / health-worker ID</span>
+          <span class="label-text" data-i18n="operator.employeeId">Employee / health-worker ID</span>
           <input type="text" id="op_employeeId" required />
         </label>
         <label class="field">
-          <span class="label-text">Facility name</span>
+          <span class="label-text" data-i18n="operator.facility">Facility name</span>
           <input type="text" id="op_facility" required />
         </label>
-        <button type="submit" class="btn" id="operatorContinueBtn"><svg class="icon"><use href="#icon-user"/></svg>Start Shift</button>
+        <button type="submit" class="btn" id="operatorContinueBtn"><svg class="icon"><use href="#icon-user"/></svg><span data-i18n="operator.startShift">Start Shift</span></button>
       </form>
     </div>
   </section>
 
   <!-- HOME -->
   <section class="screen screen-light" id="screen-home">
-    <div class="notice info">
+    <div class="notice info" data-i18n="home.notice">
       Diabetic Retinopathy screening prototype. Everything runs locally in
       this browser — no data leaves this device.
     </div>
     <div class="card" id="operatorBadgeCard">
       <div class="operator-row">
         <div>
-          <div class="operator-label">Signed in as</div>
+          <div class="operator-label" data-i18n="operator.signedInAs">Signed in as</div>
           <div class="operator-name" id="operatorBadgeName">—</div>
           <div class="operator-meta" id="operatorBadgeMeta">—</div>
         </div>
-        <button class="btn secondary" id="switchOperatorBtn"><svg class="icon"><use href="#icon-user"/></svg>Switch Operator</button>
+        <button class="btn secondary" id="switchOperatorBtn"><svg class="icon"><use href="#icon-user"/></svg><span data-i18n="operator.switch">Switch Operator</span></button>
       </div>
     </div>
     <div class="card">
-      <h2>New Screening</h2>
-      <p class="desc">Start a new patient intake and capture a retinal image.</p>
-      <button class="btn" id="startNewBtn"><svg class="icon"><use href="#icon-camera"/></svg>Start New Screening</button>
+      <h2 data-i18n="home.newScreening.title">New Screening</h2>
+      <p class="desc" data-i18n="home.newScreening.desc">Start a new patient intake and capture a retinal image.</p>
+      <button class="btn" id="startNewBtn"><svg class="icon"><use href="#icon-camera"/></svg><span data-i18n="home.newScreening.btn">Start New Screening</span></button>
     </div>
     <div class="card">
-      <h2>Case History</h2>
-      <p class="desc">View previously completed screenings saved on this device.</p>
-      <button class="btn secondary" id="viewHistoryBtn"><svg class="icon"><use href="#icon-history"/></svg>View Case History</button>
+      <h2 data-i18n="home.history.title">Case History</h2>
+      <p class="desc" data-i18n="home.history.desc">View previously completed screenings saved on this device.</p>
+      <button class="btn secondary" id="viewHistoryBtn"><svg class="icon"><use href="#icon-history"/></svg><span data-i18n="home.history.btn">View Case History</span></button>
     </div>
     <div class="card">
-      <h2>Facility Dashboard</h2>
-      <p class="desc">Screening throughput and referral rate for this device.</p>
-      <button class="btn secondary" id="viewDashboardBtn"><svg class="icon"><use href="#icon-file-text"/></svg>View Dashboard</button>
+      <h2 data-i18n="home.dashboard.title">Facility Dashboard</h2>
+      <p class="desc" data-i18n="home.dashboard.desc">Screening throughput and referral rate for this device.</p>
+      <button class="btn secondary" id="viewDashboardBtn"><svg class="icon"><use href="#icon-file-text"/></svg><span data-i18n="home.dashboard.btn">View Dashboard</span></button>
     </div>
   </section>
 
   <!-- DASHBOARD -->
   <section class="screen screen-light" id="screen-dashboard">
     <div class="card">
-      <h2>Facility Dashboard</h2>
-      <p class="desc">Client-side aggregation over cases saved on this device — no server, no cross-device data.</p>
+      <h2 data-i18n="dashboard.heading">Facility Dashboard</h2>
+      <p class="desc" data-i18n="dashboard.desc">Client-side aggregation over cases saved on this device — no server, no cross-device data.</p>
       <div class="metric-grid" id="metricGrid"></div>
       <div class="btn-row" style="margin-top:16px">
-        <button class="btn secondary" id="exportCsvBtn"><svg class="icon"><use href="#icon-file-text"/></svg>Export CSV</button>
-        <button class="btn secondary" id="exportJsonBtn"><svg class="icon"><use href="#icon-file-text"/></svg>Export JSON</button>
+        <button class="btn secondary" id="exportCsvBtn"><svg class="icon"><use href="#icon-file-text"/></svg><span data-i18n="dashboard.exportCsv">Export CSV</span></button>
+        <button class="btn secondary" id="exportJsonBtn"><svg class="icon"><use href="#icon-file-text"/></svg><span data-i18n="dashboard.exportJson">Export JSON</span></button>
       </div>
     </div>
   </section>
@@ -179,21 +186,21 @@
   <!-- INTAKE -->
   <section class="screen screen-light" id="screen-intake">
     <div class="card">
-      <h2>Patient Intake</h2>
-      <p class="desc">Step 1 of 4</p>
+      <h2 data-i18n="intake.heading">Patient Intake</h2>
+      <p class="desc" data-i18n="intake.step">Step 1 of 4</p>
       <form id="intakeForm">
         <label class="field">
-          <span class="label-text">Name</span>
+          <span class="label-text" data-i18n="intake.name">Name</span>
           <input type="text" id="f_name" required />
         </label>
 
         <label class="field">
-          <span class="label-text">Age</span>
+          <span class="label-text" data-i18n="intake.age">Age</span>
           <input type="number" id="f_age" min="0" max="120" required />
         </label>
 
         <label class="field">
-          <span class="label-text">Gender</span>
+          <span class="label-text" data-i18n="intake.gender">Gender</span>
           <select id="f_gender">
             <option value="Female">Female</option>
             <option value="Male">Male</option>
@@ -203,80 +210,80 @@
         </label>
 
         <label class="field">
-          <span class="label-text">If pregnant, or number of births/children</span>
+          <span class="label-text" data-i18n="intake.pregnancy">If pregnant, or number of births/children</span>
           <input type="text" id="f_pregnancy" placeholder="e.g. Pregnant (2nd trimester), or 2 births, or N/A" />
         </label>
 
         <div class="field">
-          <span class="label-text">Immediate family/lineage history of diabetes</span>
+          <span class="label-text" data-i18n="intake.familyHistory">Immediate family/lineage history of diabetes</span>
           <div class="radio-row" data-group="f_familyHistory">
-            <label class="radio-opt"><input type="radio" name="f_familyHistory" value="Yes" /> Yes</label>
-            <label class="radio-opt"><input type="radio" name="f_familyHistory" value="No" /> No</label>
+            <label class="radio-opt"><input type="radio" name="f_familyHistory" value="Yes" /> <span data-i18n="common.yes">Yes</span></label>
+            <label class="radio-opt"><input type="radio" name="f_familyHistory" value="No" /> <span data-i18n="common.no">No</span></label>
           </div>
         </div>
 
         <div class="field">
-          <span class="label-text">Diagnosed with diabetes</span>
+          <span class="label-text" data-i18n="intake.diagnosedDiabetes">Diagnosed with diabetes</span>
           <div class="radio-row" data-group="f_diagnosedDiabetes">
-            <label class="radio-opt"><input type="radio" name="f_diagnosedDiabetes" value="Yes" /> Yes</label>
-            <label class="radio-opt"><input type="radio" name="f_diagnosedDiabetes" value="No" /> No</label>
+            <label class="radio-opt"><input type="radio" name="f_diagnosedDiabetes" value="Yes" /> <span data-i18n="common.yes">Yes</span></label>
+            <label class="radio-opt"><input type="radio" name="f_diagnosedDiabetes" value="No" /> <span data-i18n="common.no">No</span></label>
           </div>
         </div>
 
         <div class="conditional" id="diabetesDurationWrap">
           <label class="field">
-            <span class="label-text">Duration of diabetes</span>
+            <span class="label-text" data-i18n="intake.diabetesDuration">Duration of diabetes</span>
             <input type="text" id="f_diabetesDuration" placeholder="e.g. 8 years" />
           </label>
         </div>
 
         <label class="field">
-          <span class="label-text">Any other medical condition / pre-existing condition</span>
+          <span class="label-text" data-i18n="intake.otherConditions">Any other medical condition / pre-existing condition</span>
           <textarea id="f_otherConditions" placeholder="Free text — e.g. hypertension, thyroid disorder, none"></textarea>
         </label>
 
         <div class="field">
-          <span class="label-text">Smoking</span>
+          <span class="label-text" data-i18n="intake.smoking">Smoking</span>
           <div class="radio-row" data-group="f_smoking">
-            <label class="radio-opt"><input type="radio" name="f_smoking" value="Yes" /> Yes</label>
-            <label class="radio-opt"><input type="radio" name="f_smoking" value="No" /> No</label>
+            <label class="radio-opt"><input type="radio" name="f_smoking" value="Yes" /> <span data-i18n="common.yes">Yes</span></label>
+            <label class="radio-opt"><input type="radio" name="f_smoking" value="No" /> <span data-i18n="common.no">No</span></label>
           </div>
         </div>
         <label class="field">
-          <span class="label-text">Smoking details (type, frequency, etc.)</span>
+          <span class="label-text" data-i18n="intake.smokingDetails">Smoking details (type, frequency, etc.)</span>
           <input type="text" id="f_smokingDetails" placeholder="Free text" />
         </label>
 
         <div class="field">
-          <span class="label-text">Alcohol use</span>
+          <span class="label-text" data-i18n="intake.alcohol">Alcohol use</span>
           <div class="radio-row" data-group="f_alcohol">
-            <label class="radio-opt"><input type="radio" name="f_alcohol" value="Yes" /> Yes</label>
-            <label class="radio-opt"><input type="radio" name="f_alcohol" value="No" /> No</label>
+            <label class="radio-opt"><input type="radio" name="f_alcohol" value="Yes" /> <span data-i18n="common.yes">Yes</span></label>
+            <label class="radio-opt"><input type="radio" name="f_alcohol" value="No" /> <span data-i18n="common.no">No</span></label>
           </div>
         </div>
         <label class="field">
-          <span class="label-text">Alcohol frequency</span>
+          <span class="label-text" data-i18n="intake.alcoholDetails">Alcohol frequency</span>
           <input type="text" id="f_alcoholDetails" placeholder="e.g. occasional, weekly, daily" />
         </label>
 
         <div class="field">
-          <span class="label-text">Drug use</span>
+          <span class="label-text" data-i18n="intake.drugUse">Drug use</span>
           <div class="radio-row" data-group="f_drugUse">
-            <label class="radio-opt"><input type="radio" name="f_drugUse" value="Yes" /> Yes</label>
-            <label class="radio-opt"><input type="radio" name="f_drugUse" value="No" /> No</label>
+            <label class="radio-opt"><input type="radio" name="f_drugUse" value="Yes" /> <span data-i18n="common.yes">Yes</span></label>
+            <label class="radio-opt"><input type="radio" name="f_drugUse" value="No" /> <span data-i18n="common.no">No</span></label>
           </div>
         </div>
         <label class="field">
-          <span class="label-text">Drug use details</span>
+          <span class="label-text" data-i18n="intake.drugUseDetails">Drug use details</span>
           <input type="text" id="f_drugUseDetails" placeholder="Free text" />
         </label>
 
         <label class="field">
-          <span class="label-text">Workplace / occupational exposure</span>
+          <span class="label-text" data-i18n="intake.occupationalExposure">Workplace / occupational exposure</span>
           <textarea id="f_occupationalExposure" placeholder="Free text — e.g. chemical exposure, prolonged sun/UV exposure, other occupational risk factors"></textarea>
         </label>
 
-        <button type="submit" class="btn" id="intakeContinueBtn">Continue</button>
+        <button type="submit" class="btn" id="intakeContinueBtn" data-i18n="intake.continue">Continue</button>
       </form>
     </div>
   </section>
@@ -284,18 +291,18 @@
   <!-- ABHA -->
   <section class="screen" id="screen-abha">
     <div class="card">
-      <h2>Link ABHA ID</h2>
-      <p class="desc">Step 2 of 4</p>
-      <div class="notice demo">
+      <h2 data-i18n="abha.heading">Link ABHA ID</h2>
+      <p class="desc" data-i18n="abha.step">Step 2 of 4</p>
+      <div class="notice demo" data-i18n="abha.notice">
         Demo only — not connected to real ABDM/ABHA systems.
       </div>
       <label class="field">
-        <span class="label-text">ABHA ID / Number</span>
+        <span class="label-text" data-i18n="abha.label">ABHA ID / Number</span>
         <input type="text" id="f_abhaId" placeholder="e.g. 14-1234-5678-9012" />
       </label>
       <div class="btn-row">
-        <button class="btn secondary" id="abhaSkipBtn">Skip</button>
-        <button class="btn" id="abhaContinueBtn">Continue</button>
+        <button class="btn secondary" id="abhaSkipBtn" data-i18n="abha.skip">Skip</button>
+        <button class="btn" id="abhaContinueBtn" data-i18n="abha.continue">Continue</button>
       </div>
     </div>
   </section>
@@ -303,26 +310,26 @@
   <!-- CONSENT -->
   <section class="screen" id="screen-consent">
     <div class="card">
-      <h2>Patient Consent</h2>
-      <p class="desc">Step 3 of 4</p>
+      <h2 data-i18n="consent.heading">Patient Consent</h2>
+      <p class="desc" data-i18n="consent.step">Step 3 of 4</p>
       <label class="consent-check">
         <input type="checkbox" id="consentCheckbox" />
-        <span>I confirm the patient (or their guardian) has given verbal or written consent for this retinal image to be captured and used for AI-assisted diabetic retinopathy screening.</span>
+        <span data-i18n="consent.text">I confirm the patient (or their guardian) has given verbal or written consent for this retinal image to be captured and used for AI-assisted diabetic retinopathy screening.</span>
       </label>
-      <button class="btn" id="consentContinueBtn" disabled>Continue to Capture</button>
+      <button class="btn" id="consentContinueBtn" disabled data-i18n="consent.continue">Continue to Capture</button>
     </div>
   </section>
 
   <!-- CAPTURE -->
   <section class="screen" id="screen-capture">
     <div class="card">
-      <h2>Retinal Image Capture</h2>
-      <p class="desc">Step 4 of 4</p>
+      <h2 data-i18n="capture.heading">Retinal Image Capture</h2>
+      <p class="desc" data-i18n="capture.step">Step 4 of 4</p>
 
       <div id="captureChooser">
         <div class="btn-row">
-          <button class="btn" id="openCameraBtn"><svg class="icon"><use href="#icon-camera"/></svg>Use Camera</button>
-          <button class="btn secondary" id="chooseFileBtn"><svg class="icon"><use href="#icon-upload"/></svg>Upload Image</button>
+          <button class="btn" id="openCameraBtn"><svg class="icon"><use href="#icon-camera"/></svg><span data-i18n="capture.useCamera">Use Camera</span></button>
+          <button class="btn secondary" id="chooseFileBtn"><svg class="icon"><use href="#icon-upload"/></svg><span data-i18n="capture.uploadImage">Upload Image</span></button>
         </div>
         <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none" />
       </div>
@@ -330,8 +337,8 @@
       <div class="capture-area" id="cameraArea" style="display:none">
         <video id="cameraVideo" autoplay playsinline muted></video>
         <div class="btn-row">
-          <button class="btn" id="snapBtn"><svg class="icon"><use href="#icon-camera"/></svg>Capture Photo</button>
-          <button class="btn secondary" id="cancelCameraBtn">Cancel</button>
+          <button class="btn" id="snapBtn"><svg class="icon"><use href="#icon-camera"/></svg><span data-i18n="capture.capturePhoto">Capture Photo</span></button>
+          <button class="btn secondary" id="cancelCameraBtn" data-i18n="capture.cancel">Cancel</button>
         </div>
       </div>
 
@@ -349,8 +356,8 @@
   <!-- HISTORY -->
   <section class="screen screen-light" id="screen-history">
     <div class="card">
-      <h2>Case History</h2>
-      <p class="desc">Screenings saved on this device (localStorage).</p>
+      <h2 data-i18n="history.heading">Case History</h2>
+      <p class="desc" data-i18n="history.desc">Screenings saved on this device (localStorage).</p>
       <div id="historyList"></div>
     </div>
   </section>
@@ -359,7 +366,7 @@
   <section class="screen" id="screen-case-detail">
     <div id="resultsViewer"></div>
     <div class="card" id="caseDetailBody"></div>
-    <button class="pdf-fab" id="pdfFabBtn" style="display:none"><svg class="icon"><use href="#icon-download"/></svg>Download PDF Report</button>
+    <button class="pdf-fab" id="pdfFabBtn" style="display:none"><svg class="icon"><use href="#icon-download"/></svg><span data-i18n="reviewer.downloadPdf">Download PDF Report</span></button>
   </section>
 
 </div>
@@ -371,6 +378,7 @@
 <script src="segmentation.js"></script>
 <script src="referral-engine.js"></script>
 <script src="export.js"></script>
+<script src="i18n.js"></script>
 <script src="fundus-check.js"></script>
 <script src="quality-gate.js"></script>
 <script src="inference.js"></script>

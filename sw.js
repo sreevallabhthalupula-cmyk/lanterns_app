@@ -4,7 +4,7 @@
  * Bump CACHE_NAME whenever any cached file changes so clients pick up the
  * new version instead of serving stale files forever.
  */
-const CACHE_NAME = 'dr-pwa-shell-v13';
+const CACHE_NAME = 'dr-pwa-shell-v14';
 
 const APP_SHELL_FILES = [
   './',
@@ -18,6 +18,9 @@ const APP_SHELL_FILES = [
   './segmentation.js',
   './referral-engine.js',
   './export.js',
+  './i18n.js',
+  './strings/en.json',
+  './strings/hi.json',
   './manifest.json',
   './tf.min.js',
   './jspdf.umd.min.js',
