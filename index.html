@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>DR Screening</title>
+<meta name="theme-color" content="#105a82" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <button class="back-btn" id="backBtn">&larr; Back</button>
+    <h1 id="topbarTitle">DR Screening</h1>
+    <span class="offline-chip" id="offlineChip">Offline</span>
+  </header>
+
+  <div class="install-banner" id="installBanner">
+    <span>Install this app for offline use</span>
+    <button id="installBtn">Install</button>
+  </div>
+
+  <!-- HOME -->
+  <section class="screen" id="screen-home">
+    <div class="notice info">
+      Diabetic Retinopathy screening prototype. Everything runs locally in
+      this browser — no data leaves this device.
+    </div>
+    <div class="card">
+      <h2>New Screening</h2>
+      <p class="desc">Start a new patient intake and capture a retinal image.</p>
+      <button class="btn" id="startNewBtn">Start New Screening</button>
+    </div>
+    <div class="card">
+      <h2>Case History</h2>
+      <p class="desc">View previously completed screenings saved on this device.</p>
+      <button class="btn secondary" id="viewHistoryBtn">View Case History</button>
+    </div>
+  </section>
+
+  <!-- INTAKE -->
+  <section class="screen" id="screen-intake">
+    <div class="card">
+      <h2>Patient Intake</h2>
+      <p class="desc">Step 1 of 3</p>
+      <form id="intakeForm">
+        <label class="field">
+          <span class="label-text">Name</span>
+          <input type="text" id="f_name" required />
+        </label>
+
+        <label class="field">
+          <span class="label-text">Age</span>
+          <input type="number" id="f_age" min="0" max="120" required />
+        </label>
+
+        <label class="field">
+          <span class="label-text">Gender</span>
+          <select id="f_gender">
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Other">Other</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="label-text">If pregnant, or number of births/children</span>
+          <input type="text" id="f_pregnancy" placeholder="e.g. Pregnant (2nd trimester), or 2 births, or N/A" />
+        </label>
+
+        <div class="field">
+          <span class="label-text">Immediate family/lineage history of diabetes</span>
+          <div class="radio-row" data-group="f_familyHistory">
+            <label class="radio-opt"><input type="radio" name="f_familyHistory" value="Yes" /> Yes</label>
+            <label class="radio-opt"><input type="radio" name="f_familyHistory" value="No" /> No</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="label-text">Diagnosed with diabetes</span>
+          <div class="radio-row" data-group="f_diagnosedDiabetes">
+            <label class="radio-opt"><input type="radio" name="f_diagnosedDiabetes" value="Yes" /> Yes</label>
+            <label class="radio-opt"><input type="radio" name="f_diagnosedDiabetes" value="No" /> No</label>
+          </div>
+        </div>
+
+        <div class="conditional" id="diabetesDurationWrap">
+          <label class="field">
+            <span class="label-text">Duration of diabetes</span>
+            <input type="text" id="f_diabetesDuration" placeholder="e.g. 8 years" />
+          </label>
+        </div>
+
+        <label class="field">
+          <span class="label-text">Any other medical condition / pre-existing condition</span>
+          <textarea id="f_otherConditions" placeholder="Free text — e.g. hypertension, thyroid disorder, none"></textarea>
+        </label>
+
+        <div class="field">
+          <span class="label-text">Smoking / tobacco / narcotic drug use</span>
+          <div class="radio-row" data-group="f_substanceUse">
+            <label class="radio-opt"><input type="radio" name="f_substanceUse" value="Yes" /> Yes</label>
+            <label class="radio-opt"><input type="radio" name="f_substanceUse" value="No" /> No</label>
+          </div>
+        </div>
+        <label class="field">
+          <span class="label-text">Details (type of use, frequency, etc.)</span>
+          <input type="text" id="f_substanceUseDetails" placeholder="Free text" />
+        </label>
+
+        <button type="submit" class="btn" id="intakeContinueBtn">Continue</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ABHA -->
+  <section class="screen" id="screen-abha">
+    <div class="card">
+      <h2>Link ABHA ID</h2>
+      <p class="desc">Step 2 of 3</p>
+      <div class="notice demo">
+        Demo only — not connected to real ABDM/ABHA systems.
+      </div>
+      <label class="field">
+        <span class="label-text">ABHA ID / Number</span>
+        <input type="text" id="f_abhaId" placeholder="e.g. 14-1234-5678-9012" />
+      </label>
+      <div class="btn-row">
+        <button class="btn secondary" id="abhaSkipBtn">Skip</button>
+        <button class="btn" id="abhaContinueBtn">Continue</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAPTURE -->
+  <section class="screen" id="screen-capture">
+    <div class="card">
+      <h2>Retinal Image Capture</h2>
+      <p class="desc">Step 3 of 3</p>
+
+      <div id="captureChooser">
+        <div class="btn-row">
+          <button class="btn" id="openCameraBtn">Use Camera</button>
+          <button class="btn secondary" id="chooseFileBtn">Upload Image</button>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none" />
+      </div>
+
+      <div class="capture-area" id="cameraArea" style="display:none">
+        <video id="cameraVideo" autoplay playsinline muted></video>
+        <div class="btn-row">
+          <button class="btn" id="snapBtn">Capture Photo</button>
+          <button class="btn secondary" id="cancelCameraBtn">Cancel</button>
+        </div>
+      </div>
+
+      <div id="previewArea" style="display:none">
+        <div class="capture-area">
+          <img class="preview" id="previewImg" alt="Captured retinal image" />
+        </div>
+      </div>
+
+      <div id="qualityResult"></div>
+      <div id="inferenceResult"></div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="screen" id="screen-history">
+    <div class="card">
+      <h2>Case History</h2>
+      <p class="desc">Screenings saved on this device (localStorage).</p>
+      <div id="historyList"></div>
+    </div>
+  </section>
+
+  <!-- CASE DETAIL -->
+  <section class="screen" id="screen-case-detail">
+    <div class="card" id="caseDetailBody"></div>
+  </section>
+
+</div>
+
+<canvas id="workCanvas" style="display:none"></canvas>
+
+<script src="tf.min.js"></script>
+<script src="jspdf.umd.min.js"></script>
+<script src="fundus-check.js"></script>
+<script src="quality-gate.js"></script>
+<script src="inference.js"></script>
+<script src="pdf-report.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

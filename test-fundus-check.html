@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Fundus Plausibility Check — Test Harness</title>
+<style>
+  body { background:#0f1115; color:#e8e9ec; font-family: -apple-system, sans-serif; padding: 20px; }
+  .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap:16px; }
+  .card { background:#1a1d24; border:1px solid #2c2f38; border-radius:10px; overflow:hidden; }
+  .card img { width:100%; height:220px; object-fit:contain; background:#000; display:block; }
+  .card-body { padding:12px 14px; }
+  .verdict { font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:8px; font-size:13px; }
+  .verdict.pass { background:rgba(46,204,113,.15); color:#2ecc71; }
+  .verdict.fail { background:rgba(231,76,60,.15); color:#e74c3c; }
+  .signal { font-size:12px; margin:4px 0; padding:6px 8px; border-radius:6px; background:#20242d; }
+  .signal.pass { border-left:3px solid #2ecc71; }
+  .signal.fail { border-left:3px solid #e74c3c; }
+  .signal .name { font-weight:600; }
+  .signal .detail { color:#9aa0ac; margin-top:2px; }
+  input[type=file] { margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<h2>Fundus Plausibility Check — Test Harness</h2>
+<input type="file" id="fileInput" accept="image/*" multiple />
+<div class="grid" id="results"></div>
+
+<script src="fundus-check.js"></script>
+<script>
+const resultsEl = document.getElementById('results');
+
+function signalRow(name, sig) {
+  return `<div class="signal ${sig.pass ? 'pass':'fail'}">
+    <div class="name">${sig.pass ? '✓':'✗'} ${name}</div>
+    <div class="detail">${JSON.stringify(sig.detail)}</div>
+  </div>`;
+}
+
+function processFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const result = runFundusPlausibilityCheck(img);
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${e.target.result}" />
+        <div class="card-body">
+          <div>${file.name}</div>
+          <div class="verdict ${result.pass?'pass':'fail'}">${result.pass?'PASS':'REJECT'} (${result.passCount}/4)</div>
+          ${signalRow('Vignette', result.signals.vignette)}
+          ${signalRow('Optic disc', result.signals.opticDisc)}
+          ${signalRow('Vessel pattern', result.signals.vesselPattern)}
+          ${signalRow('Color profile', result.signals.colorProfile)}
+        </div>
+      `;
+      resultsEl.appendChild(card);
+      window.__lastResults = window.__lastResults || {};
+      window.__lastResults[file.name] = result;
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+document.getElementById('fileInput').addEventListener('change', (e) => {
+  Array.from(e.target.files).forEach(processFile);
+});
+
+async function loadAndTest(url, name) {
+  const resp = await fetch(url);
+  const blob = await resp.blob();
+  const file = new File([blob], name, { type: blob.type });
+  processFile(file);
+}
+window.loadAndTest = loadAndTest;
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>TF.js Model Conversion Test</title>
+<style>
+  body { background:#0f1115; color:#e8e9ec; font-family: -apple-system, sans-serif; padding: 20px; }
+  pre { background:#1a1d24; padding:12px; border-radius:8px; overflow:auto; font-size:13px; }
+  img { max-width: 300px; border-radius: 8px; display:block; margin-bottom:10px; }
+  .row { display:flex; gap:6px; align-items:center; font-size:14px; margin:4px 0; }
+  .bar { height:14px; background:#2f8fd6; border-radius:3px; }
+</style>
+</head>
+<body>
+<h2>TF.js Converted Model — Inference Test</h2>
+<div id="status">Loading TensorFlow.js...</div>
+<img id="preview" />
+<pre id="output"></pre>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/4.20.0/tf.min.js"></script>
+<script>
+const MEAN = [103.22674560546875, 55.19105911254883, 18.386537551879883]; // R,G,B
+const STD  = [70.68042755126953, 38.57248306274414, 20.664936065673828];  // R,G,B
+const CLASS_ORDER = ['Mild', 'Moderate', 'No_DR', 'Proliferate_DR', 'Severe'];
+const CLASS_TO_GRADE = { No_DR: 0, Mild: 1, Moderate: 2, Severe: 3, Proliferate_DR: 4 };
+
+const statusEl = document.getElementById('status');
+const outputEl = document.getElementById('output');
+const previewEl = document.getElementById('preview');
+
+function log(msg) {
+  statusEl.textContent = msg;
+  console.log(msg);
+}
+
+async function loadImageAsTensor(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      previewEl.src = url;
+      const canvas = document.createElement('canvas');
+      canvas.width = 224;
+      canvas.height = 224;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, 224, 224);
+      const imageData = ctx.getImageData(0, 0, 224, 224);
+      resolve(imageData);
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+function preprocess(imageData) {
+  // imageData.data is RGBA Uint8ClampedArray, HWC, 224x224.
+  // The converted SavedModel/TF.js graph is NHWC (onnx2tf converts NCHW -> NHWC),
+  // so unlike the original ONNX model we do NOT transpose to channel-first here.
+  return tf.tidy(() => {
+    let t = tf.browser.fromPixels(imageData, 3); // HWC, RGB, uint8, drops alpha
+    t = t.toFloat();
+    const mean = tf.tensor1d(MEAN);
+    const std = tf.tensor1d(STD);
+    t = t.sub(mean).div(std); // per-channel zscore, still HWC
+    t = t.expandDims(0); // HWC -> NHWC
+    return t;
+  });
+}
+
+async function main() {
+  log('Loading TF.js graph model from tfjs_model/model.json ...');
+  const model = await tf.loadGraphModel('tfjs_model/model.json');
+  log('Model loaded. Preprocessing test image...');
+
+  const imageData = await loadImageAsTensor('sample_fundus_synthetic.png');
+  const input = preprocess(imageData);
+
+  log('Running inference...');
+  const outputTensor = model.execute(input);
+  const probs = await outputTensor.data();
+
+  let text = `Raw output shape: [${outputTensor.shape.join(', ')}]\n`;
+  text += `Raw output sum: ${Array.from(probs).reduce((a, b) => a + b, 0).toFixed(6)}\n\n`;
+  text += '--- Per-class probabilities (output index order) ---\n';
+
+  let maxIdx = 0;
+  CLASS_ORDER.forEach((cls, i) => {
+    const grade = CLASS_TO_GRADE[cls];
+    text += `  index ${i}: ${cls.padEnd(15)} (grade ${grade})  ->  ${(probs[i] * 100).toFixed(2)}%\n`;
+    if (probs[i] > probs[maxIdx]) maxIdx = i;
+  });
+
+  const topCls = CLASS_ORDER[maxIdx];
+  text += `\nPredicted: index ${maxIdx} = ${topCls} (grade ${CLASS_TO_GRADE[topCls]}), confidence ${(probs[maxIdx] * 100).toFixed(2)}%`;
+
+  outputEl.textContent = text;
+  log('Done.');
+
+  input.dispose();
+  outputTensor.dispose();
+
+  window.__tfjsTestResult = {
+    shape: outputTensor.shape,
+    probs: Array.from(probs),
+    predictedIndex: maxIdx,
+    predictedClass: topCls,
+    predictedGrade: CLASS_TO_GRADE[topCls],
+  };
+}
+
+main().catch((err) => {
+  log('ERROR: ' + err.message);
+  outputEl.textContent = err.stack;
+  console.error(err);
+});
+</script>
+</body>
+</html>

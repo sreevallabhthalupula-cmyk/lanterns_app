@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.egg-info/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code session runtime state (not project content)
+.claude/scheduled_tasks.lock
+
+# Redundant/generated build artifacts -- NOT needed to run the app.
+# The deployed app is the repo root + tfjs_model/ (model.json + all
+# .bin shards are kept, see below). These are intermediate/duplicate
+# byproducts from the ONNX -> TF.js conversion and Netlify packaging:
+saved_model_dr/
+netlify_deploy/
+deploy.zip
+deploy_part*.zip
+netlify_response.json
+
+# NOTE: tfjs_model/*.bin, tfjs_model/model.json, tf.min.js, and
+# jspdf.umd.min.js are intentionally NOT ignored -- required to run the app.
