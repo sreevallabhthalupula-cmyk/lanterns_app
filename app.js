@@ -29,6 +29,7 @@ function showScreen(id, opts = {}) {
     'screen-consent': 'Patient Consent',
     'screen-capture': 'Image Capture',
     'screen-history': 'Case History',
+    'screen-dashboard': 'Facility Dashboard',
     'screen-case-detail': 'Case Detail',
   };
   document.getElementById('topbarTitle').textContent = titles[id] || 'DR Screening';
@@ -122,6 +123,38 @@ document.getElementById('viewHistoryBtn').addEventListener('click', () => {
   renderHistoryList();
   showScreen('screen-history');
 });
+
+document.getElementById('viewDashboardBtn').addEventListener('click', () => {
+  renderDashboard();
+  showScreen('screen-dashboard');
+});
+
+/** Client-side aggregation over saved cases (Section 4: Facility dashboard). */
+function renderDashboard() {
+  const cases = loadCases();
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfWeek = new Date(startOfToday);
+  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+
+  const todayCount = cases.filter((c) => new Date(c.createdAt) >= startOfToday).length;
+  const weekCount = cases.filter((c) => new Date(c.createdAt) >= startOfWeek).length;
+  const withResult = cases.filter((c) => c.result);
+  const referableCount = withResult.filter((c) => c.result.grade >= 2).length;
+  const referralRate = withResult.length > 0 ? Math.round((referableCount / withResult.length) * 100) : 0;
+  const pendingCount = cases.filter((c) => c.reviewStatus === 'Pending Ophthalmologist Review').length;
+
+  const tiles = [
+    { label: "Today's screenings", value: todayCount },
+    { label: "This week's screenings", value: weekCount },
+    { label: 'Referral rate', value: `${referralRate}%` },
+    { label: 'Pending review', value: pendingCount },
+  ];
+
+  document.getElementById('metricGrid').innerHTML = tiles
+    .map((t) => `<div class="metric-tile"><div class="metric-value">${t.value}</div><div class="metric-label">${escapeHtml(t.label)}</div></div>`)
+    .join('');
+}
 
 // ---------------------------------------------------------------------
 // Intake form

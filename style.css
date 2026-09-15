@@ -738,3 +738,27 @@ header.topbar .back-btn .icon { margin-right: 4px; vertical-align: -3px; }
   color: var(--text);
 }
 .consent-check input { margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }
+
+/* Section 4: Facility Dashboard metric tiles */
+.metric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.screen-light .metric-tile {
+  background: var(--color-primary-faint);
+  border-radius: var(--radius-card);
+  padding: 16px;
+}
+.metric-value {
+  font-family: var(--font-heading);
+  font-size: var(--fs-display);
+  font-weight: var(--fw-display);
+  color: var(--color-primary);
+}
+.screen-light .metric-label {
+  font-size: var(--fs-caption);
+  color: var(--color-text);
+  opacity: 0.65;
+  margin-top: 4px;
+}

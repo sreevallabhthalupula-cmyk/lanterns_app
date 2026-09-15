@@ -156,6 +156,20 @@
       <p class="desc">View previously completed screenings saved on this device.</p>
       <button class="btn secondary" id="viewHistoryBtn"><svg class="icon"><use href="#icon-history"/></svg>View Case History</button>
     </div>
+    <div class="card">
+      <h2>Facility Dashboard</h2>
+      <p class="desc">Screening throughput and referral rate for this device.</p>
+      <button class="btn secondary" id="viewDashboardBtn"><svg class="icon"><use href="#icon-file-text"/></svg>View Dashboard</button>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="screen screen-light" id="screen-dashboard">
+    <div class="card">
+      <h2>Facility Dashboard</h2>
+      <p class="desc">Client-side aggregation over cases saved on this device — no server, no cross-device data.</p>
+      <div class="metric-grid" id="metricGrid"></div>
+    </div>
   </section>
 
   <!-- INTAKE -->
