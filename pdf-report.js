@@ -106,6 +106,7 @@ function buildCasePdf(c) {
   rows.push(['Drug use', p.drugUse ? `${p.drugUse}${p.drugUseDetails ? ' — ' + p.drugUseDetails : ''}` : '—']);
   rows.push(['Occupational exposure', p.occupationalExposure || '—']);
   rows.push(['ABHA ID', c.abhaId ? `${c.abhaId} (demo — not a real ABDM link)` : 'Not linked (demo)']);
+  rows.push(['Consent', c.consent?.given ? `Given — ${new Date(c.consent.timestamp).toLocaleString()}` : 'Not recorded']);
   rows.push(['Captured by', c.operatorName ? `${c.operatorName}${c.facility ? ' — ' + c.facility : ''}` : '—']);
 
   doc.setFont('helvetica', 'normal');
@@ -149,6 +150,12 @@ function buildCasePdf(c) {
     doc.text('Referral status:', margin, y);
     doc.setFont('helvetica', 'normal');
     doc.text(r.referral?.text || '—', margin + labelWidth, y);
+    y += 16;
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('Follow-up interval:', margin, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(getReferralInterval(r.grade).interval, margin + labelWidth, y);
     y += 20;
   } else {
     doc.setFont('helvetica', 'normal');

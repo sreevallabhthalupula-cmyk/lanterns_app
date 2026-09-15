@@ -162,7 +162,7 @@
   <section class="screen screen-light" id="screen-intake">
     <div class="card">
       <h2>Patient Intake</h2>
-      <p class="desc">Step 1 of 3</p>
+      <p class="desc">Step 1 of 4</p>
       <form id="intakeForm">
         <label class="field">
           <span class="label-text">Name</span>
@@ -267,7 +267,7 @@
   <section class="screen" id="screen-abha">
     <div class="card">
       <h2>Link ABHA ID</h2>
-      <p class="desc">Step 2 of 3</p>
+      <p class="desc">Step 2 of 4</p>
       <div class="notice demo">
         Demo only — not connected to real ABDM/ABHA systems.
       </div>
@@ -282,11 +282,24 @@
     </div>
   </section>
 
+  <!-- CONSENT -->
+  <section class="screen" id="screen-consent">
+    <div class="card">
+      <h2>Patient Consent</h2>
+      <p class="desc">Step 3 of 4</p>
+      <label class="consent-check">
+        <input type="checkbox" id="consentCheckbox" />
+        <span>I confirm the patient (or their guardian) has given verbal or written consent for this retinal image to be captured and used for AI-assisted diabetic retinopathy screening.</span>
+      </label>
+      <button class="btn" id="consentContinueBtn" disabled>Continue to Capture</button>
+    </div>
+  </section>
+
   <!-- CAPTURE -->
   <section class="screen" id="screen-capture">
     <div class="card">
       <h2>Retinal Image Capture</h2>
-      <p class="desc">Step 3 of 3</p>
+      <p class="desc">Step 4 of 4</p>
 
       <div id="captureChooser">
         <div class="btn-row">
@@ -338,6 +351,7 @@
 <script src="tf.min.js"></script>
 <script src="jspdf.umd.min.js"></script>
 <script src="segmentation.js"></script>
+<script src="referral-engine.js"></script>
 <script src="fundus-check.js"></script>
 <script src="quality-gate.js"></script>
 <script src="inference.js"></script>

@@ -710,3 +710,31 @@ header.topbar .back-btn .icon { margin-right: 4px; vertical-align: -3px; }
   background: var(--color-primary-soft);
 }
 .welcome-dot.active { background: var(--color-primary); width: 18px; border-radius: 4px; transition: all 150ms ease; }
+
+/* Section 4: reviewer queue urgency indicator */
+.urgency-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fail);
+  flex-shrink: 0;
+  margin-right: 4px;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+}
+
+/* Section 4: pre-capture consent */
+.consent-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.consent-check input { margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }

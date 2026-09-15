@@ -26,6 +26,7 @@ function showScreen(id, opts = {}) {
     'screen-home': 'DR Screening',
     'screen-intake': 'Patient Intake',
     'screen-abha': 'Link ABHA ID',
+    'screen-consent': 'Patient Consent',
     'screen-capture': 'Image Capture',
     'screen-history': 'Case History',
     'screen-case-detail': 'Case Detail',
@@ -100,6 +101,7 @@ function newDraftCase() {
     facility: currentOperator ? currentOperator.facility : null,
     patient: null,
     abhaId: null,
+    consent: null,
     imageDataUrl: null,
     imageWidth: null,
     imageHeight: null,
@@ -183,10 +185,28 @@ document.getElementById('intakeForm').addEventListener('submit', (e) => {
 // ---------------------------------------------------------------------
 document.getElementById('abhaContinueBtn').addEventListener('click', () => {
   draftCase.abhaId = document.getElementById('f_abhaId').value.trim() || null;
-  goToCapture();
+  goToConsent();
 });
 document.getElementById('abhaSkipBtn').addEventListener('click', () => {
   draftCase.abhaId = null;
+  goToConsent();
+});
+
+// ---------------------------------------------------------------------
+// Pre-capture consent (Section 4)
+// ---------------------------------------------------------------------
+function goToConsent() {
+  document.getElementById('consentCheckbox').checked = false;
+  document.getElementById('consentContinueBtn').disabled = true;
+  showScreen('screen-consent');
+}
+
+document.getElementById('consentCheckbox').addEventListener('change', (e) => {
+  document.getElementById('consentContinueBtn').disabled = !e.target.checked;
+});
+
+document.getElementById('consentContinueBtn').addEventListener('click', () => {
+  draftCase.consent = { given: true, timestamp: new Date().toISOString() };
   goToCapture();
 });
 
@@ -420,8 +440,18 @@ function statusChipClass(status) {
   return 'pending';
 }
 
+/** Grade-4/urgent cases first (Section 4: reviewer queue sorted by urgency), then most recent. */
+function sortCasesByUrgency(cases) {
+  return [...cases].sort((a, b) => {
+    const rankA = a.result ? getReferralInterval(a.result.grade).urgencyRank : -1;
+    const rankB = b.result ? getReferralInterval(b.result.grade).urgencyRank : -1;
+    if (rankB !== rankA) return rankB - rankA;
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+}
+
 function renderHistoryList() {
-  const cases = loadCases();
+  const cases = sortCasesByUrgency(loadCases());
   const listEl = document.getElementById('historyList');
 
   if (cases.length === 0) {
@@ -430,9 +460,11 @@ function renderHistoryList() {
   }
 
   listEl.innerHTML = cases
-    .map(
-      (c) => `
+    .map((c) => {
+      const urgencyRank = c.result ? getReferralInterval(c.result.grade).urgencyRank : -1;
+      return `
     <div class="case-list-item" data-id="${c.id}">
+      ${urgencyRank === 2 ? '<span class="urgency-dot" title="Urgent referral"></span>' : ''}
       <div>
         <div class="name">${escapeHtml(c.patient?.name || 'Unnamed')}</div>
         <div class="meta">${new Date(c.createdAt).toLocaleString()} · ${
@@ -441,8 +473,8 @@ function renderHistoryList() {
       </div>
       <span class="status-chip ${statusChipClass(c.reviewStatus)}">${c.reviewStatus}</span>
     </div>
-  `
-    )
+  `;
+    })
     .join('');
 
   listEl.querySelectorAll('.case-list-item').forEach((item) => {
@@ -486,6 +518,7 @@ function renderCaseDetail(caseId) {
       <tr><td>Drug use</td><td>${escapeHtml(p.drugUse || '')}${p.drugUseDetails ? ' — ' + escapeHtml(p.drugUseDetails) : ''}</td></tr>
       <tr><td>Occupational exposure</td><td>${escapeHtml(p.occupationalExposure || '—')}</td></tr>
       <tr><td>ABHA ID</td><td>${escapeHtml(c.abhaId || 'Not linked (demo)')}</td></tr>
+      <tr><td>Consent</td><td>${c.consent?.given ? 'Given — ' + new Date(c.consent.timestamp).toLocaleString() : 'Not recorded'}</td></tr>
       <tr><td>Captured by</td><td>${escapeHtml(c.operatorName || '—')}${c.facility ? ' — ' + escapeHtml(c.facility) : ''}</td></tr>
     </table>
 
@@ -573,6 +606,7 @@ function renderResultsViewer(c) {
         <div class="rv-chip">Eye: <strong>${escapeHtml(c.eyeSide || '—')}</strong></div>
         <div class="rv-chip">Grade: <strong>${escapeHtml(r.label)}</strong></div>
         <div class="rv-chip">Confidence: <strong>${r.confidence}%</strong></div>
+        <div class="rv-chip">Follow-up: <strong>${escapeHtml(getReferralInterval(r.grade).interval)}</strong></div>
       </div>
     </div>
   `;
