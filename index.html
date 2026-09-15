@@ -243,7 +243,9 @@
 
   <!-- CASE DETAIL -->
   <section class="screen" id="screen-case-detail">
+    <div id="resultsViewer"></div>
     <div class="card" id="caseDetailBody"></div>
+    <button class="pdf-fab" id="pdfFabBtn" style="display:none">Download PDF Report</button>
   </section>
 
 </div>
@@ -252,6 +254,7 @@
 
 <script src="tf.min.js"></script>
 <script src="jspdf.umd.min.js"></script>
+<script src="segmentation.js"></script>
 <script src="fundus-check.js"></script>
 <script src="quality-gate.js"></script>
 <script src="inference.js"></script>

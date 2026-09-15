@@ -460,24 +460,13 @@ function renderCaseDetail(caseId) {
   const p = c.patient || {};
   const r = c.result || {};
 
+  renderResultsViewer(c);
+
   body.innerHTML = `
     <h2>${escapeHtml(p.name || 'Unnamed')}</h2>
     <p class="desc">${new Date(c.createdAt).toLocaleString()}</p>
     <span class="status-chip ${statusChipClass(c.reviewStatus)}">${c.reviewStatus}</span>
     ${c.reviewedAt ? `<div class="meta" style="margin-top:4px">Reviewed: ${new Date(c.reviewedAt).toLocaleString()}</div>` : ''}
-
-    ${c.imageDataUrl ? `<div class="capture-area" style="margin-top:16px"><img class="preview" src="${c.imageDataUrl}" /></div>` : ''}
-
-    ${
-      r.label
-        ? `
-      <div class="notice info">AI-assisted grading — screening aid, not a clinical diagnosis.</div>
-      <div class="result-grade">${r.label}</div>
-      <div class="result-confidence">Confidence: ${r.confidence}%</div>
-      <div class="referral-badge ${r.referral?.level}">${r.referral?.text || ''}</div>
-    `
-        : ''
-    }
 
     <table class="kv-table" style="margin-top:16px">
       <tr><td>Age</td><td>${escapeHtml(p.age || '')}</td></tr>
@@ -506,7 +495,6 @@ function renderCaseDetail(caseId) {
         <button class="btn success" id="approveBtn" ${c.reviewStatus === 'Approved' ? 'disabled' : ''}>Approve</button>
         <button class="btn danger" id="flagBtn" ${c.reviewStatus === 'Flagged for Review' ? 'disabled' : ''}>Flag for Review</button>
       </div>
-      <button class="btn secondary" id="downloadPdfBtn" style="margin-top:10px">Download PDF Report</button>
     </div>
   `;
 
@@ -516,9 +504,105 @@ function renderCaseDetail(caseId) {
   document.getElementById('flagBtn')?.addEventListener('click', () => {
     setCaseReviewStatus(c.id, 'Flagged for Review');
   });
-  document.getElementById('downloadPdfBtn')?.addEventListener('click', () => {
-    downloadCasePdf(c);
+
+  const fab = document.getElementById('pdfFabBtn');
+  fab.style.display = 'block';
+  fab.onclick = () => downloadCasePdf(c);
+}
+
+// ---------------------------------------------------------------------
+// Results viewer: structure-toggle layout (spec: results-screen redesign)
+// ---------------------------------------------------------------------
+let rvActiveStructure = 'segmentation';
+let rvGrayscale = false;
+
+function renderResultsViewer(c) {
+  const container = document.getElementById('resultsViewer');
+  const r = c.result || {};
+
+  if (!c.imageDataUrl || !r.label) {
+    container.innerHTML = '';
+    document.getElementById('pdfFabBtn').style.display = 'none';
+    return;
+  }
+
+  rvActiveStructure = 'segmentation';
+  rvGrayscale = false;
+
+  const structureLabels = {
+    segmentation: 'Segmentation',
+    microaneurysm: 'Microaneurysm',
+    hard_exudate: 'Hard Exudate',
+    soft_exudate: 'Soft Exudate',
+    optic_disc: 'Optic Disc',
+    haemorrhage: 'Haemorrhage',
+  };
+
+  container.innerHTML = `
+    <div class="results-viewer">
+      <div class="rv-toggle-row">
+        <button class="rv-toggle-btn active" id="rvNormalBtn">Normal</button>
+        <button class="rv-toggle-btn" id="rvGrayscaleBtn">Grayscale</button>
+      </div>
+      <div class="rv-body">
+        <div class="rv-sidebar" id="rvSidebar">
+          ${STRUCTURE_KEYS.map(
+            (key) =>
+              `<button class="rv-structure-row${key === rvActiveStructure ? ' active' : ''}" data-structure="${key}">${structureLabels[key]}</button>`
+          ).join('')}
+        </div>
+        <div class="rv-image-area">
+          <img class="rv-base" id="rvBaseImg" src="${c.imageDataUrl}" alt="Retinal image" />
+          <div class="rv-mask-overlay" id="rvMaskOverlay"></div>
+        </div>
+      </div>
+      <div class="rv-chip-row">
+        <div class="rv-chip">Eye: <strong>${escapeHtml(c.eyeSide || '—')}</strong></div>
+        <div class="rv-chip">Grade: <strong>${escapeHtml(r.label)}</strong></div>
+        <div class="rv-chip">Confidence: <strong>${r.confidence}%</strong></div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('rvNormalBtn').addEventListener('click', () => setRvGrayscale(false));
+  document.getElementById('rvGrayscaleBtn').addEventListener('click', () => setRvGrayscale(true));
+
+  document.getElementById('rvSidebar').querySelectorAll('.rv-structure-row').forEach((btn) => {
+    btn.addEventListener('click', () => selectRvStructure(c.id, btn.getAttribute('data-structure')));
   });
+
+  selectRvStructure(c.id, rvActiveStructure);
+}
+
+function setRvGrayscale(on) {
+  rvGrayscale = on;
+  document.getElementById('rvNormalBtn').classList.toggle('active', !on);
+  document.getElementById('rvGrayscaleBtn').classList.toggle('active', on);
+  document.getElementById('rvBaseImg').classList.toggle('grayscale', on);
+}
+
+/** Lazy-loads (fetches on demand, not eagerly) the mask for one structure and overlays it. */
+async function selectRvStructure(caseId, structureKey) {
+  rvActiveStructure = structureKey;
+  const sidebar = document.getElementById('rvSidebar');
+  if (!sidebar) return; // screen navigated away before the async load resolved
+  sidebar.querySelectorAll('.rv-structure-row').forEach((btn) => {
+    btn.classList.toggle('active', btn.getAttribute('data-structure') === structureKey);
+  });
+
+  const overlay = document.getElementById('rvMaskOverlay');
+  overlay.innerHTML = `<div class="rv-mask-pending">Loading…</div>`;
+
+  const mask = await loadStructureMask(caseId, structureKey);
+
+  if (rvActiveStructure !== structureKey) return; // user switched tabs while this was loading
+  if (!document.getElementById('rvMaskOverlay')) return; // screen navigated away
+
+  if (mask.available) {
+    overlay.innerHTML = `<img src="${mask.overlayDataUrl}" style="width:100%;height:100%;object-fit:contain" />`;
+  } else {
+    overlay.innerHTML = `<div class="rv-mask-pending">Lesion segmentation model not yet integrated for this structure.</div>`;
+  }
 }
 
 /** Updates a case's review status + timestamp in localStorage and re-renders the detail view. */
