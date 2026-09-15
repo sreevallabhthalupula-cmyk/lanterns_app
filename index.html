@@ -169,6 +169,10 @@
       <h2>Facility Dashboard</h2>
       <p class="desc">Client-side aggregation over cases saved on this device — no server, no cross-device data.</p>
       <div class="metric-grid" id="metricGrid"></div>
+      <div class="btn-row" style="margin-top:16px">
+        <button class="btn secondary" id="exportCsvBtn"><svg class="icon"><use href="#icon-file-text"/></svg>Export CSV</button>
+        <button class="btn secondary" id="exportJsonBtn"><svg class="icon"><use href="#icon-file-text"/></svg>Export JSON</button>
+      </div>
     </div>
   </section>
 
@@ -366,6 +370,7 @@
 <script src="jspdf.umd.min.js"></script>
 <script src="segmentation.js"></script>
 <script src="referral-engine.js"></script>
+<script src="export.js"></script>
 <script src="fundus-check.js"></script>
 <script src="quality-gate.js"></script>
 <script src="inference.js"></script>

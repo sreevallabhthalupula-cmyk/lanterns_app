@@ -129,6 +129,9 @@ document.getElementById('viewDashboardBtn').addEventListener('click', () => {
   showScreen('screen-dashboard');
 });
 
+document.getElementById('exportCsvBtn').addEventListener('click', exportCasesAsCSV);
+document.getElementById('exportJsonBtn').addEventListener('click', exportCasesAsJSON);
+
 /** Client-side aggregation over saved cases (Section 4: Facility dashboard). */
 function renderDashboard() {
   const cases = loadCases();
