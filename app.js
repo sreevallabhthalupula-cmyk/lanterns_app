@@ -679,12 +679,74 @@ if ('serviceWorker' in navigator) {
 }
 
 // ---------------------------------------------------------------------
-// Init
+// Welcome carousel (first run only, Section 3)
 // ---------------------------------------------------------------------
-currentOperator = loadOperator();
-if (currentOperator) {
-  updateOperatorBadge();
-  showScreen('screen-home', { push: false });
-} else {
-  showScreen('screen-operator', { push: false });
+const WELCOME_SEEN_KEY = 'dr_pwa_welcome_seen';
+let welcomeSlideIndex = 0;
+const WELCOME_SLIDE_COUNT = 3;
+
+function goToPostWelcomeScreen() {
+  currentOperator = loadOperator();
+  if (currentOperator) {
+    updateOperatorBadge();
+    showScreen('screen-home', { push: false });
+  } else {
+    showScreen('screen-operator', { push: false });
+  }
 }
+
+function showWelcomeSlide(i) {
+  welcomeSlideIndex = i;
+  document.querySelectorAll('.welcome-slide').forEach((el) => {
+    el.classList.toggle('active', Number(el.getAttribute('data-slide')) === i);
+  });
+  document.querySelectorAll('.welcome-dot').forEach((el, idx) => {
+    el.classList.toggle('active', idx === i);
+  });
+  document.getElementById('welcomeNextBtn').textContent = i === WELCOME_SLIDE_COUNT - 1 ? 'Get Started' : 'Next';
+}
+
+document.getElementById('welcomeNextBtn').addEventListener('click', () => {
+  if (welcomeSlideIndex < WELCOME_SLIDE_COUNT - 1) {
+    showWelcomeSlide(welcomeSlideIndex + 1);
+  } else {
+    localStorage.setItem(WELCOME_SEEN_KEY, 'true');
+    screenStack.length = 0;
+    goToPostWelcomeScreen();
+  }
+});
+document.getElementById('welcomeSkipBtn').addEventListener('click', () => {
+  localStorage.setItem(WELCOME_SEEN_KEY, 'true');
+  screenStack.length = 0;
+  goToPostWelcomeScreen();
+});
+
+// ---------------------------------------------------------------------
+// Init — splash stays up while the TF.js model preloads from cache
+// (Section 3: functional, not just decorative), then routes to
+// Welcome (first run) or straight to Operator/Home.
+// ---------------------------------------------------------------------
+(async function init() {
+  const splashStart = Date.now();
+  const MIN_SPLASH_MS = 500;
+
+  try {
+    await loadModel();
+  } catch (err) {
+    console.warn('Model preload failed, will retry at first inference:', err);
+  }
+
+  const elapsed = Date.now() - splashStart;
+  if (elapsed < MIN_SPLASH_MS) {
+    await new Promise((r) => setTimeout(r, MIN_SPLASH_MS - elapsed));
+  }
+
+  document.getElementById('splashScreen').classList.add('hidden');
+
+  if (!localStorage.getItem(WELCOME_SEEN_KEY)) {
+    showWelcomeSlide(0);
+    showScreen('screen-welcome', { push: false });
+  } else {
+    goToPostWelcomeScreen();
+  }
+})();

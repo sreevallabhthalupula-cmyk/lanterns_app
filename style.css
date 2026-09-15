@@ -645,3 +645,68 @@ header.topbar .back-btn .icon { margin-right: 4px; vertical-align: -3px; }
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* Section 3: Splash + Welcome onboarding */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--color-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  transition: opacity 220ms ease;
+}
+.splash-screen.hidden { opacity: 0; pointer-events: none; }
+.splash-logo {
+  width: 64px;
+  height: 64px;
+  stroke: #fff;
+  fill: none;
+  stroke-width: 1.6;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  padding: 16px;
+  animation: splashPulse 1.6s ease-in-out infinite;
+}
+@keyframes splashPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.06); opacity: 0.85; }
+}
+.splash-title {
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: var(--fs-display);
+  font-weight: var(--fw-display);
+}
+.splash-sub {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: var(--fs-caption);
+}
+
+.welcome-card { text-align: center; padding: 28px 22px; }
+.welcome-slide { display: none; }
+.welcome-slide.active { display: block; animation: screenIn 180ms ease-out; }
+.welcome-icon {
+  width: 56px;
+  height: 56px;
+  stroke: var(--color-primary);
+  fill: none;
+  stroke-width: 1.6;
+  background: var(--color-primary-faint);
+  border-radius: 50%;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+.welcome-slide h2 { text-align: center; }
+.welcome-slide p.desc { text-align: center; margin-bottom: 0; }
+.welcome-dots { display: flex; justify-content: center; gap: 6px; margin: 20px 0 18px; }
+.welcome-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+}
+.welcome-dot.active { background: var(--color-primary); width: 18px; border-radius: 4px; transition: all 150ms ease; }

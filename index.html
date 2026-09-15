@@ -60,6 +60,12 @@
   <path d="m15 9-6 6" />
   <path d="m9 9 6 6" /></symbol>
 </svg>
+<div id="splashScreen" class="splash-screen">
+  <svg class="splash-logo" viewBox="0 0 24 24"><use href="#icon-eye"/></svg>
+  <div class="splash-title">DR Screening</div>
+  <div class="splash-sub">Loading…</div>
+</div>
+
 <div id="app">
 
   <header class="topbar">
@@ -72,6 +78,34 @@
     <span>Install this app for offline use</span>
     <button id="installBtn">Install</button>
   </div>
+
+  <!-- WELCOME (first run only) -->
+  <section class="screen screen-light" id="screen-welcome">
+    <div class="card welcome-card">
+      <div class="welcome-slide active" data-slide="0">
+        <svg class="welcome-icon"><use href="#icon-eye"/></svg>
+        <h2>Screen for Diabetic Retinopathy</h2>
+        <p class="desc">Capture a retinal image and get an AI-assisted severity grade in seconds, right at the point of care.</p>
+      </div>
+      <div class="welcome-slide" data-slide="1">
+        <svg class="welcome-icon"><use href="#icon-download"/></svg>
+        <h2>Works fully offline</h2>
+        <p class="desc">No internet connection needed after first install. Every model, every screen, every report generates entirely on this device — nothing is uploaded anywhere.</p>
+      </div>
+      <div class="welcome-slide" data-slide="2">
+        <svg class="welcome-icon"><use href="#icon-file-text"/></svg>
+        <h2>Built for the field</h2>
+        <p class="desc">Patient intake, capture, AI grading, PDF report, and ophthalmologist review — one continuous workflow for rural and district-level screening.</p>
+      </div>
+      <div class="welcome-dots" id="welcomeDots">
+        <span class="welcome-dot active"></span><span class="welcome-dot"></span><span class="welcome-dot"></span>
+      </div>
+      <div class="btn-row">
+        <button class="btn secondary" id="welcomeSkipBtn">Skip</button>
+        <button class="btn" id="welcomeNextBtn">Next</button>
+      </div>
+    </div>
+  </section>
 
   <!-- OPERATOR PROFILE -->
   <section class="screen screen-light" id="screen-operator">
