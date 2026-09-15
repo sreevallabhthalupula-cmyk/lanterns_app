@@ -13,6 +13,15 @@
 
 :root {
   color-scheme: dark;
+  /* Typography scale (Figma kit) */
+  --fs-display: 24px;
+  --fw-display: 600;
+  --fs-section: 18px;
+  --fw-section: 500;
+  --fs-body: 14px;
+  --fw-body: 400;
+  --fs-caption: 12px;
+  --fw-caption: 300;
   --bg: #0f1115;
   --card: #1a1d24;
   --card-2: #20242d;
@@ -49,6 +58,7 @@ html, body {
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: var(--fs-body);
   min-height: 100%;
 }
 
@@ -101,11 +111,13 @@ header.topbar h1 {
 
 .card h2 {
   margin: 0 0 4px;
-  font-size: 18px;
+  font-size: var(--fs-section);
+  font-weight: var(--fw-section);
 }
 .card p.desc {
   color: var(--text-dim);
-  font-size: 13px;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-caption);
   margin: 0 0 16px;
 }
 
@@ -115,7 +127,8 @@ label.field {
 }
 label.field > span.label-text {
   display: block;
-  font-size: 13px;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-caption);
   color: var(--text-dim);
   margin-bottom: 6px;
 }
@@ -166,7 +179,9 @@ textarea { resize: vertical; min-height: 60px; }
 .conditional.visible { display: block; }
 
 .btn {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--accent);
   color: #fff;
   border: none;
@@ -477,6 +492,8 @@ textarea { resize: vertical; min-height: 60px; }
   right: 18px;
   bottom: 18px;
   z-index: 50;
+  display: flex;
+  align-items: center;
   background: var(--accent);
   color: #fff;
   border: none;
@@ -579,3 +596,52 @@ textarea { resize: vertical; min-height: 60px; }
 .screen-light .case-list-item .meta { color: var(--color-text); font-weight: 300; opacity: 0.7; }
 
 .screen-light .empty-state { color: var(--color-text); opacity: 0.5; }
+
+/* Icon system (self-hosted Lucide sprite, Section 2) */
+.icon {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -4px;
+  flex-shrink: 0;
+}
+.icon-sm { width: 15px; height: 15px; vertical-align: -2.5px; }
+.btn .icon { margin-right: 6px; }
+header.topbar .back-btn .icon { margin-right: 4px; vertical-align: -3px; }
+.rv-structure-row .icon { margin-right: 6px; }
+.operator-name .icon,
+.card h2 .icon { margin-right: 7px; vertical-align: -3px; }
+
+/* Motion pass (Section 2): screen transitions, button press, skeleton loader */
+@keyframes screenIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.screen.active { animation: screenIn 140ms ease-out; }
+
+.btn, .rv-toggle-btn, .rv-structure-row, .pdf-fab, .radio-opt {
+  transition: transform 100ms ease, opacity 100ms ease;
+}
+.btn:active, .pdf-fab:active { transform: scale(0.97); opacity: 0.88; }
+.rv-toggle-btn:active, .rv-structure-row:active, .radio-opt:active { transform: scale(0.97); }
+
+.skeleton-card { padding: 4px 0; }
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--card-2) 25%, var(--border) 50%, var(--card-2) 75%);
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.3s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+.skeleton-line.w-60 { width: 60%; height: 22px; }
+.skeleton-line.w-40 { width: 40%; }
+.skeleton-line.w-80 { width: 80%; height: 28px; border-radius: 8px; }
+@keyframes skeletonPulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

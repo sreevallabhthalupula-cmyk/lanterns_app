@@ -298,7 +298,7 @@ function onImageCaptured() {
 function renderFundusCheckFailure(fundusCheck) {
   const el = document.getElementById('qualityResult');
   el.innerHTML = `
-    <div class="verdict-banner fail">RECAPTURE — ${fundusCheck.reason}</div>
+    <div class="verdict-banner fail"><svg class="icon"><use href="#icon-x-circle"/></svg>RECAPTURE — ${fundusCheck.reason}</div>
     <div class="btn-row">
       <button class="btn" id="retakeBtn">Retake Image</button>
     </div>
@@ -311,10 +311,10 @@ function renderFundusCheckFailure(fundusCheck) {
 function renderQualityResult(quality) {
   const el = document.getElementById('qualityResult');
   if (quality.pass) {
-    el.innerHTML = `<div class="verdict-banner pass">Image quality: PASS</div>`;
+    el.innerHTML = `<div class="verdict-banner pass"><svg class="icon"><use href="#icon-check-circle"/></svg>Image quality: PASS</div>`;
   } else {
     el.innerHTML = `
-      <div class="verdict-banner fail">RECAPTURE — ${quality.reason}</div>
+      <div class="verdict-banner fail"><svg class="icon"><use href="#icon-alert-triangle"/></svg>RECAPTURE — ${quality.reason}</div>
       <div class="btn-row">
         <button class="btn" id="retakeBtn">Retake Image</button>
       </div>
@@ -329,6 +329,11 @@ async function runInferenceFlow() {
   const inferenceEl = document.getElementById('inferenceResult');
   inferenceEl.innerHTML = `
     <div class="spinner-row"><div class="spinner"></div> Loading model and analyzing image...</div>
+    <div class="skeleton-card">
+      <div class="skeleton-line w-80"></div>
+      <div class="skeleton-line w-40"></div>
+      <div class="skeleton-line w-60"></div>
+    </div>
   `;
 
   const result = await runInference(workCanvas);
@@ -492,8 +497,8 @@ function renderCaseDetail(caseId) {
         these buttons.
       </div>
       <div class="btn-row">
-        <button class="btn success" id="approveBtn" ${c.reviewStatus === 'Approved' ? 'disabled' : ''}>Approve</button>
-        <button class="btn danger" id="flagBtn" ${c.reviewStatus === 'Flagged for Review' ? 'disabled' : ''}>Flag for Review</button>
+        <button class="btn success" id="approveBtn" ${c.reviewStatus === 'Approved' ? 'disabled' : ''}><svg class="icon"><use href="#icon-check"/></svg>Approve</button>
+        <button class="btn danger" id="flagBtn" ${c.reviewStatus === 'Flagged for Review' ? 'disabled' : ''}><svg class="icon"><use href="#icon-flag"/></svg>Flag for Review</button>
       </div>
     </div>
   `;
@@ -537,6 +542,14 @@ function renderResultsViewer(c) {
     optic_disc: 'Optic Disc',
     haemorrhage: 'Haemorrhage',
   };
+  const structureIcons = {
+    segmentation: 'eye',
+    microaneurysm: 'circle-dot',
+    hard_exudate: 'droplet',
+    soft_exudate: 'droplet',
+    optic_disc: 'circle-dot',
+    haemorrhage: 'droplet',
+  };
 
   container.innerHTML = `
     <div class="results-viewer">
@@ -548,7 +561,7 @@ function renderResultsViewer(c) {
         <div class="rv-sidebar" id="rvSidebar">
           ${STRUCTURE_KEYS.map(
             (key) =>
-              `<button class="rv-structure-row${key === rvActiveStructure ? ' active' : ''}" data-structure="${key}">${structureLabels[key]}</button>`
+              `<button class="rv-structure-row${key === rvActiveStructure ? ' active' : ''}" data-structure="${key}"><svg class="icon icon-sm"><use href="#icon-${structureIcons[key]}"/></svg>${structureLabels[key]}</button>`
           ).join('')}
         </div>
         <div class="rv-image-area">
