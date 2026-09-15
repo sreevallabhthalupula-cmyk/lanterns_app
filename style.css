@@ -28,15 +28,13 @@
   --border: #2c2f38;
   --text: #e8e9ec;
   --text-dim: #9aa0ac;
-  --accent: #2f8fd6;
-  --accent-2: #105a82;
   --pass: #2ecc71;
   --warn: #e8a33d;
   --fail: #e74c3c;
   --urgent: #e74c3c;
 
-  /* Light-theme tokens (Medical Health Mobile App Figma kit) --
-     applied only within .screen-light (Home, Operator, Intake, History) */
+  /* Unified primary blue -- used across both dark-theme (Capture, ABHA,
+     Case Detail) and .screen-light (Home, Operator, Intake, History) screens */
   --color-primary: #2260ff;
   --color-primary-soft: #cad6ff;
   --color-primary-faint: #ecf1ff;
@@ -166,9 +164,9 @@ textarea { resize: vertical; min-height: 60px; }
   cursor: pointer;
   font-size: 14px;
 }
-.radio-opt input { accent-color: var(--accent); }
+.radio-opt input { accent-color: var(--color-primary); }
 .radio-opt.checked {
-  border-color: var(--accent);
+  border-color: var(--color-primary);
   background: rgba(47, 143, 214, 0.12);
 }
 
@@ -182,7 +180,7 @@ textarea { resize: vertical; min-height: 60px; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent);
+  background: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -286,7 +284,7 @@ textarea { resize: vertical; min-height: 60px; }
 .spinner {
   width: 18px; height: 18px;
   border: 2px solid var(--border);
-  border-top-color: var(--accent);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -349,7 +347,7 @@ textarea { resize: vertical; min-height: 60px; }
 .install-banner {
   display: none;
   background: var(--card-2);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--color-primary);
   border-radius: 10px;
   padding: 10px 12px;
   margin-bottom: 16px;
@@ -360,7 +358,7 @@ textarea { resize: vertical; min-height: 60px; }
 }
 .install-banner.visible { display: flex; }
 .install-banner button {
-  background: var(--accent);
+  background: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -405,9 +403,9 @@ textarea { resize: vertical; min-height: 60px; }
   cursor: pointer;
 }
 .rv-toggle-btn.active {
-  background: var(--accent);
+  background: var(--color-primary);
   color: #fff;
-  border-color: var(--accent);
+  border-color: var(--color-primary);
 }
 
 .rv-body {
@@ -432,7 +430,7 @@ textarea { resize: vertical; min-height: 60px; }
 }
 .rv-structure-row.active {
   background: rgba(47, 143, 214, 0.15);
-  border-color: var(--accent);
+  border-color: var(--color-primary);
   color: var(--text);
   font-weight: 600;
 }
@@ -494,7 +492,7 @@ textarea { resize: vertical; min-height: 60px; }
   z-index: 50;
   display: flex;
   align-items: center;
-  background: var(--accent);
+  background: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 24px;
@@ -737,7 +735,7 @@ header.topbar .back-btn .icon { margin-right: 4px; vertical-align: -3px; }
   line-height: 1.5;
   color: var(--text);
 }
-.consent-check input { margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }
+.consent-check input { margin-top: 2px; accent-color: var(--color-primary); flex-shrink: 0; }
 
 /* Section 4: Facility Dashboard metric tiles */
 .metric-grid {
