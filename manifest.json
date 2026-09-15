@@ -1,6 +1,6 @@
 {
-  "name": "Diabetic Retinopathy Screening",
-  "short_name": "DR Screen",
+  "name": "Lanterns",
+  "short_name": "Lanterns",
   "description": "Client-side Diabetic Retinopathy screening prototype — patient intake, image capture, and AI-assisted grading.",
   "start_url": "./index.html",
   "scope": "./",

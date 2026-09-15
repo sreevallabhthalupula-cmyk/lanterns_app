@@ -27,7 +27,7 @@ function showScreen(id, opts = {}) {
 
   const titles = {
     'screen-operator': 'Operator Sign-In',
-    'screen-home': 'DR Screening',
+    'screen-home': 'Lanterns',
     'screen-intake': 'Patient Intake',
     'screen-abha': 'Link ABHA ID',
     'screen-consent': 'Patient Consent',
@@ -36,7 +36,7 @@ function showScreen(id, opts = {}) {
     'screen-dashboard': 'Facility Dashboard',
     'screen-case-detail': 'Case Detail',
   };
-  document.getElementById('topbarTitle').textContent = titles[id] || 'DR Screening';
+  document.getElementById('topbarTitle').textContent = titles[id] || 'Lanterns';
   document.getElementById('backBtn').classList.toggle('visible', screenStack.length > 1);
   window.scrollTo(0, 0);
 }
