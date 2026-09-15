@@ -101,11 +101,12 @@ function buildCasePdf(c) {
     rows.push(['Duration of diabetes', p.diabetesDuration || '—']);
   }
   rows.push(['Other medical conditions', p.otherConditions || '—']);
-  rows.push([
-    'Smoking / tobacco / narcotic use',
-    p.substanceUse ? `${p.substanceUse}${p.substanceUseDetails ? ' — ' + p.substanceUseDetails : ''}` : '—',
-  ]);
+  rows.push(['Smoking', p.smoking ? `${p.smoking}${p.smokingDetails ? ' — ' + p.smokingDetails : ''}` : '—']);
+  rows.push(['Alcohol use', p.alcohol ? `${p.alcohol}${p.alcoholDetails ? ' — ' + p.alcoholDetails : ''}` : '—']);
+  rows.push(['Drug use', p.drugUse ? `${p.drugUse}${p.drugUseDetails ? ' — ' + p.drugUseDetails : ''}` : '—']);
+  rows.push(['Occupational exposure', p.occupationalExposure || '—']);
   rows.push(['ABHA ID', c.abhaId ? `${c.abhaId} (demo — not a real ABDM link)` : 'Not linked (demo)']);
+  rows.push(['Captured by', c.operatorName ? `${c.operatorName}${c.facility ? ' — ' + c.facility : ''}` : '—']);
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);

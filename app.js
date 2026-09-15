@@ -1,15 +1,17 @@
 /**
- * app.js — screen navigation, patient intake, mock ABHA, capture flow,
- * and localStorage case persistence for the DR Screening PWA.
+ * app.js — screen navigation, operator profile, patient intake, mock
+ * ABHA, capture flow, and localStorage case persistence for the DR
+ * Screening PWA.
  */
 
 const STORAGE_KEY = 'dr_pwa_cases';
+const OPERATOR_KEY = 'dr_pwa_operator';
 const MAX_STORED_IMAGE_DIM = 800; // downscale captured images before persisting to localStorage
 
 // ---------------------------------------------------------------------
 // Navigation
 // ---------------------------------------------------------------------
-const screenStack = ['screen-home'];
+const screenStack = [];
 
 function showScreen(id, opts = {}) {
   document.querySelectorAll('.screen').forEach((el) => el.classList.remove('active'));
@@ -20,6 +22,7 @@ function showScreen(id, opts = {}) {
   }
 
   const titles = {
+    'screen-operator': 'Operator Sign-In',
     'screen-home': 'DR Screening',
     'screen-intake': 'Patient Intake',
     'screen-abha': 'Link ABHA ID',
@@ -42,6 +45,49 @@ function goBack() {
 document.getElementById('backBtn').addEventListener('click', goBack);
 
 // ---------------------------------------------------------------------
+// Operator profile (local device profile, not real authentication)
+// ---------------------------------------------------------------------
+let currentOperator = null;
+
+function loadOperator() {
+  try {
+    return JSON.parse(localStorage.getItem(OPERATOR_KEY));
+  } catch {
+    return null;
+  }
+}
+
+function updateOperatorBadge() {
+  if (!currentOperator) return;
+  document.getElementById('operatorBadgeName').textContent = currentOperator.name;
+  document.getElementById('operatorBadgeMeta').textContent =
+    `${currentOperator.employeeId} · ${currentOperator.facility}`;
+}
+
+document.getElementById('operatorForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  currentOperator = {
+    name: document.getElementById('op_name').value.trim(),
+    employeeId: document.getElementById('op_employeeId').value.trim(),
+    facility: document.getElementById('op_facility').value.trim(),
+  };
+  localStorage.setItem(OPERATOR_KEY, JSON.stringify(currentOperator));
+
+  updateOperatorBadge();
+  screenStack.length = 0;
+  showScreen('screen-home', { push: false });
+});
+
+document.getElementById('switchOperatorBtn').addEventListener('click', () => {
+  currentOperator = null;
+  localStorage.removeItem(OPERATOR_KEY);
+  document.getElementById('operatorForm').reset();
+  screenStack.length = 0;
+  showScreen('screen-operator', { push: false });
+});
+
+// ---------------------------------------------------------------------
 // Draft case state (accumulated across intake -> abha -> capture)
 // ---------------------------------------------------------------------
 let draftCase = null;
@@ -50,6 +96,8 @@ function newDraftCase() {
   return {
     id: 'case_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
     createdAt: new Date().toISOString(),
+    operatorName: currentOperator ? currentOperator.name : null,
+    facility: currentOperator ? currentOperator.facility : null,
     patient: null,
     abhaId: null,
     imageDataUrl: null,
@@ -118,8 +166,13 @@ document.getElementById('intakeForm').addEventListener('submit', (e) => {
         ? document.getElementById('f_diabetesDuration').value.trim()
         : null,
     otherConditions: document.getElementById('f_otherConditions').value.trim(),
-    substanceUse: getRadioValue('f_substanceUse'),
-    substanceUseDetails: document.getElementById('f_substanceUseDetails').value.trim(),
+    smoking: getRadioValue('f_smoking'),
+    smokingDetails: document.getElementById('f_smokingDetails').value.trim(),
+    alcohol: getRadioValue('f_alcohol'),
+    alcoholDetails: document.getElementById('f_alcoholDetails').value.trim(),
+    drugUse: getRadioValue('f_drugUse'),
+    drugUseDetails: document.getElementById('f_drugUseDetails').value.trim(),
+    occupationalExposure: document.getElementById('f_occupationalExposure').value.trim(),
   };
 
   showScreen('screen-abha');
@@ -434,10 +487,12 @@ function renderCaseDetail(caseId) {
       <tr><td>Diagnosed with diabetes</td><td>${escapeHtml(p.diagnosedDiabetes || '')}</td></tr>
       ${p.diabetesDuration ? `<tr><td>Duration of diabetes</td><td>${escapeHtml(p.diabetesDuration)}</td></tr>` : ''}
       <tr><td>Other medical conditions</td><td>${escapeHtml(p.otherConditions || '—')}</td></tr>
-      <tr><td>Smoking/tobacco/narcotic use</td><td>${escapeHtml(p.substanceUse || '')} ${escapeHtml(
-    p.substanceUseDetails ? '— ' + p.substanceUseDetails : ''
-  )}</td></tr>
+      <tr><td>Smoking</td><td>${escapeHtml(p.smoking || '')}${p.smokingDetails ? ' — ' + escapeHtml(p.smokingDetails) : ''}</td></tr>
+      <tr><td>Alcohol use</td><td>${escapeHtml(p.alcohol || '')}${p.alcoholDetails ? ' — ' + escapeHtml(p.alcoholDetails) : ''}</td></tr>
+      <tr><td>Drug use</td><td>${escapeHtml(p.drugUse || '')}${p.drugUseDetails ? ' — ' + escapeHtml(p.drugUseDetails) : ''}</td></tr>
+      <tr><td>Occupational exposure</td><td>${escapeHtml(p.occupationalExposure || '—')}</td></tr>
       <tr><td>ABHA ID</td><td>${escapeHtml(c.abhaId || 'Not linked (demo)')}</td></tr>
+      <tr><td>Captured by</td><td>${escapeHtml(c.operatorName || '—')}${c.facility ? ' — ' + escapeHtml(c.facility) : ''}</td></tr>
     </table>
 
     <div class="card" style="margin-top:16px;padding:16px">
@@ -529,4 +584,10 @@ if ('serviceWorker' in navigator) {
 // ---------------------------------------------------------------------
 // Init
 // ---------------------------------------------------------------------
-showScreen('screen-home', { push: false });
+currentOperator = loadOperator();
+if (currentOperator) {
+  updateOperatorBadge();
+  showScreen('screen-home', { push: false });
+} else {
+  showScreen('screen-operator', { push: false });
+}

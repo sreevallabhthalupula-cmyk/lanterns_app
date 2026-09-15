@@ -24,11 +24,44 @@
     <button id="installBtn">Install</button>
   </div>
 
+  <!-- OPERATOR PROFILE -->
+  <section class="screen" id="screen-operator">
+    <div class="card">
+      <h2>Operator Sign-In</h2>
+      <p class="desc">Local device profile — not real authentication, no password. Identifies who's using this device for the case record.</p>
+      <form id="operatorForm">
+        <label class="field">
+          <span class="label-text">Operator name</span>
+          <input type="text" id="op_name" required />
+        </label>
+        <label class="field">
+          <span class="label-text">Employee / health-worker ID</span>
+          <input type="text" id="op_employeeId" required />
+        </label>
+        <label class="field">
+          <span class="label-text">Facility name</span>
+          <input type="text" id="op_facility" required />
+        </label>
+        <button type="submit" class="btn" id="operatorContinueBtn">Start Shift</button>
+      </form>
+    </div>
+  </section>
+
   <!-- HOME -->
   <section class="screen" id="screen-home">
     <div class="notice info">
       Diabetic Retinopathy screening prototype. Everything runs locally in
       this browser — no data leaves this device.
+    </div>
+    <div class="card" id="operatorBadgeCard">
+      <div class="operator-row">
+        <div>
+          <div class="operator-label">Signed in as</div>
+          <div class="operator-name" id="operatorBadgeName">—</div>
+          <div class="operator-meta" id="operatorBadgeMeta">—</div>
+        </div>
+        <button class="btn secondary" id="switchOperatorBtn">Switch Operator</button>
+      </div>
     </div>
     <div class="card">
       <h2>New Screening</h2>
@@ -102,15 +135,44 @@
         </label>
 
         <div class="field">
-          <span class="label-text">Smoking / tobacco / narcotic drug use</span>
-          <div class="radio-row" data-group="f_substanceUse">
-            <label class="radio-opt"><input type="radio" name="f_substanceUse" value="Yes" /> Yes</label>
-            <label class="radio-opt"><input type="radio" name="f_substanceUse" value="No" /> No</label>
+          <span class="label-text">Smoking</span>
+          <div class="radio-row" data-group="f_smoking">
+            <label class="radio-opt"><input type="radio" name="f_smoking" value="Yes" /> Yes</label>
+            <label class="radio-opt"><input type="radio" name="f_smoking" value="No" /> No</label>
           </div>
         </div>
         <label class="field">
-          <span class="label-text">Details (type of use, frequency, etc.)</span>
-          <input type="text" id="f_substanceUseDetails" placeholder="Free text" />
+          <span class="label-text">Smoking details (type, frequency, etc.)</span>
+          <input type="text" id="f_smokingDetails" placeholder="Free text" />
+        </label>
+
+        <div class="field">
+          <span class="label-text">Alcohol use</span>
+          <div class="radio-row" data-group="f_alcohol">
+            <label class="radio-opt"><input type="radio" name="f_alcohol" value="Yes" /> Yes</label>
+            <label class="radio-opt"><input type="radio" name="f_alcohol" value="No" /> No</label>
+          </div>
+        </div>
+        <label class="field">
+          <span class="label-text">Alcohol frequency</span>
+          <input type="text" id="f_alcoholDetails" placeholder="e.g. occasional, weekly, daily" />
+        </label>
+
+        <div class="field">
+          <span class="label-text">Drug use</span>
+          <div class="radio-row" data-group="f_drugUse">
+            <label class="radio-opt"><input type="radio" name="f_drugUse" value="Yes" /> Yes</label>
+            <label class="radio-opt"><input type="radio" name="f_drugUse" value="No" /> No</label>
+          </div>
+        </div>
+        <label class="field">
+          <span class="label-text">Drug use details</span>
+          <input type="text" id="f_drugUseDetails" placeholder="Free text" />
+        </label>
+
+        <label class="field">
+          <span class="label-text">Workplace / occupational exposure</span>
+          <textarea id="f_occupationalExposure" placeholder="Free text — e.g. chemical exposure, prolonged sun/UV exposure, other occupational risk factors"></textarea>
         </label>
 
         <button type="submit" class="btn" id="intakeContinueBtn">Continue</button>
