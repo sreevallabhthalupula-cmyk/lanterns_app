@@ -503,7 +503,7 @@ function renderHistoryList() {
   const listEl = document.getElementById('historyList');
 
   if (cases.length === 0) {
-    listEl.innerHTML = `<div class="empty-state">No screenings saved yet.</div>`;
+    listEl.innerHTML = `<div class="empty-state"><svg class="icon empty-state-icon"><use href="#icon-history"/></svg><div>${t('history.empty')}</div></div>`;
     return;
   }
 
@@ -538,7 +538,7 @@ function renderCaseDetail(caseId) {
   const c = cases.find((x) => x.id === caseId);
   const body = document.getElementById('caseDetailBody');
   if (!c) {
-    body.innerHTML = `<div class="empty-state">Case not found.</div>`;
+    body.innerHTML = `<div class="empty-state"><svg class="icon empty-state-icon"><use href="#icon-alert-triangle"/></svg><div>${t('case.notFound')}</div></div>`;
     return;
   }
 
@@ -548,26 +548,26 @@ function renderCaseDetail(caseId) {
   renderResultsViewer(c);
 
   body.innerHTML = `
-    <h2>${escapeHtml(p.name || 'Unnamed')}</h2>
+    <h2>${escapeHtml(p.name || t('caseDetail.unnamed'))}</h2>
     <p class="desc">${new Date(c.createdAt).toLocaleString()}</p>
     <span class="status-chip ${statusChipClass(c.reviewStatus)}">${c.reviewStatus}</span>
-    ${c.reviewedAt ? `<div class="meta" style="margin-top:4px">Reviewed: ${new Date(c.reviewedAt).toLocaleString()}</div>` : ''}
+    ${c.reviewedAt ? `<div class="meta" style="margin-top:4px">${t('caseDetail.reviewed')}: ${new Date(c.reviewedAt).toLocaleString()}</div>` : ''}
 
     <table class="kv-table" style="margin-top:16px">
-      <tr><td>Age</td><td>${escapeHtml(p.age || '')}</td></tr>
-      <tr><td>Gender</td><td>${escapeHtml(p.gender || '')}</td></tr>
-      <tr><td>Pregnancy / births</td><td>${escapeHtml(p.pregnancyOrBirths || '')}</td></tr>
-      <tr><td>Family history of diabetes</td><td>${escapeHtml(p.familyHistoryDiabetes || '')}</td></tr>
-      <tr><td>Diagnosed with diabetes</td><td>${escapeHtml(p.diagnosedDiabetes || '')}</td></tr>
-      ${p.diabetesDuration ? `<tr><td>Duration of diabetes</td><td>${escapeHtml(p.diabetesDuration)}</td></tr>` : ''}
-      <tr><td>Other medical conditions</td><td>${escapeHtml(p.otherConditions || '—')}</td></tr>
-      <tr><td>Smoking</td><td>${escapeHtml(p.smoking || '')}${p.smokingDetails ? ' — ' + escapeHtml(p.smokingDetails) : ''}</td></tr>
-      <tr><td>Alcohol use</td><td>${escapeHtml(p.alcohol || '')}${p.alcoholDetails ? ' — ' + escapeHtml(p.alcoholDetails) : ''}</td></tr>
-      <tr><td>Drug use</td><td>${escapeHtml(p.drugUse || '')}${p.drugUseDetails ? ' — ' + escapeHtml(p.drugUseDetails) : ''}</td></tr>
-      <tr><td>Occupational exposure</td><td>${escapeHtml(p.occupationalExposure || '—')}</td></tr>
-      <tr><td>ABHA ID</td><td>${escapeHtml(c.abhaId || 'Not linked (demo)')}</td></tr>
-      <tr><td>Consent</td><td>${c.consent?.given ? 'Given — ' + new Date(c.consent.timestamp).toLocaleString() : 'Not recorded'}</td></tr>
-      <tr><td>Captured by</td><td>${escapeHtml(c.operatorName || '—')}${c.facility ? ' — ' + escapeHtml(c.facility) : ''}</td></tr>
+      <tr><td>${t('caseDetail.age')}</td><td>${escapeHtml(p.age || '')}</td></tr>
+      <tr><td>${t('caseDetail.gender')}</td><td>${escapeHtml(p.gender || '')}</td></tr>
+      <tr><td>${t('caseDetail.pregnancy')}</td><td>${escapeHtml(p.pregnancyOrBirths || '')}</td></tr>
+      <tr><td>${t('caseDetail.familyHistory')}</td><td>${escapeHtml(p.familyHistoryDiabetes || '')}</td></tr>
+      <tr><td>${t('caseDetail.diagnosedDiabetes')}</td><td>${escapeHtml(p.diagnosedDiabetes || '')}</td></tr>
+      ${p.diabetesDuration ? `<tr><td>${t('caseDetail.diabetesDuration')}</td><td>${escapeHtml(p.diabetesDuration)}</td></tr>` : ''}
+      <tr><td>${t('caseDetail.otherConditions')}</td><td>${escapeHtml(p.otherConditions || '—')}</td></tr>
+      <tr><td>${t('caseDetail.smoking')}</td><td>${escapeHtml(p.smoking || '')}${p.smokingDetails ? ' — ' + escapeHtml(p.smokingDetails) : ''}</td></tr>
+      <tr><td>${t('caseDetail.alcohol')}</td><td>${escapeHtml(p.alcohol || '')}${p.alcoholDetails ? ' — ' + escapeHtml(p.alcoholDetails) : ''}</td></tr>
+      <tr><td>${t('caseDetail.drugUse')}</td><td>${escapeHtml(p.drugUse || '')}${p.drugUseDetails ? ' — ' + escapeHtml(p.drugUseDetails) : ''}</td></tr>
+      <tr><td>${t('caseDetail.occupationalExposure')}</td><td>${escapeHtml(p.occupationalExposure || '—')}</td></tr>
+      <tr><td>${t('caseDetail.abhaId')}</td><td>${escapeHtml(c.abhaId || t('caseDetail.notLinkedDemo'))}</td></tr>
+      <tr><td>${t('caseDetail.consent')}</td><td>${c.consent?.given ? t('caseDetail.consentGiven') + ' — ' + new Date(c.consent.timestamp).toLocaleString() : t('caseDetail.consentNotRecorded')}</td></tr>
+      <tr><td>${t('caseDetail.capturedBy')}</td><td>${escapeHtml(c.operatorName || '—')}${c.facility ? ' — ' + escapeHtml(c.facility) : ''}</td></tr>
     </table>
 
     <div class="card" style="margin-top:16px;padding:16px">

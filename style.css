@@ -39,6 +39,7 @@
   --color-primary-soft: #cad6ff;
   --color-primary-faint: #ecf1ff;
   --color-primary-muted: #809cff;
+  --color-primary-light: #8fb4ff; /* dark-theme tint text/icon on primary-blue notices */
   --color-surface: #ffffff;
   --color-text: #070707;
   --radius-input: 13px;
@@ -46,9 +47,25 @@
   --radius-button: 24px;
   --font-heading: 'League Spartan SemiBold', sans-serif;
   --font-body: 'League Spartan Regular', sans-serif;
+  /* Shadow scale: subtle depth on cards, more lift on the primary CTA */
+  --shadow-card: 0 1px 3px rgba(7, 7, 7, 0.08);
+  --shadow-card-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-cta: 0 4px 14px rgba(34, 96, 255, 0.35);
 }
 
 * { box-sizing: border-box; }
+
+/* Keyboard/assistive-tech focus ring, consistent across both themes.
+   :focus-visible (not :focus) so it doesn't fire on touch taps. */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
 html, body {
   margin: 0;
@@ -108,6 +125,7 @@ header.topbar h1 {
   border-radius: 12px;
   padding: 18px;
   margin-bottom: 16px;
+  box-shadow: var(--shadow-card-dark);
 }
 
 .card h2 {
@@ -171,7 +189,7 @@ textarea { resize: vertical; min-height: 60px; }
 .radio-opt input { accent-color: var(--color-primary); }
 .radio-opt.checked {
   border-color: var(--color-primary);
-  background: rgba(47, 143, 214, 0.12);
+  background: var(--color-primary-faint);
 }
 
 .conditional {
@@ -194,16 +212,18 @@ textarea { resize: vertical; min-height: 60px; }
   cursor: pointer;
   width: 100%;
   text-align: center;
+  box-shadow: var(--shadow-cta);
 }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
 .btn.secondary {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text);
+  box-shadow: none;
 }
-.btn.danger { background: var(--fail); }
-.btn.success { background: var(--pass); color: #06280f; }
-.btn:disabled.success, .btn:disabled.danger { background: var(--card-2); color: var(--text-dim); }
+.btn.danger { background: var(--fail); box-shadow: 0 4px 14px rgba(231, 76, 60, 0.35); }
+.btn.success { background: var(--pass); color: #06280f; box-shadow: 0 4px 14px rgba(46, 204, 113, 0.35); }
+.btn:disabled.success, .btn:disabled.danger { background: var(--card-2); color: var(--text-dim); box-shadow: none; }
 .btn-row { display: flex; gap: 10px; margin-top: 6px; }
 .btn-row .btn { width: auto; flex: 1; }
 
@@ -220,9 +240,9 @@ textarea { resize: vertical; min-height: 60px; }
   border: 1px solid rgba(232, 163, 61, 0.35);
 }
 .notice.info {
-  background: rgba(47, 143, 214, 0.1);
-  color: #7ec4ee;
-  border: 1px solid rgba(47, 143, 214, 0.3);
+  background: rgba(34, 96, 255, 0.1);
+  color: var(--color-primary-light);
+  border: 1px solid rgba(34, 96, 255, 0.3);
 }
 
 .capture-area {
@@ -345,7 +365,12 @@ textarea { resize: vertical; min-height: 60px; }
   text-align: center;
   padding: 30px 10px;
   font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
+.empty-state-icon { width: 28px; height: 28px; opacity: 0.5; }
 
 .kv-table { width: 100%; font-size: 13.5px; border-collapse: collapse; }
 .kv-table td { padding: 6px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
@@ -440,7 +465,7 @@ textarea { resize: vertical; min-height: 60px; }
   align-items: center;
 }
 .rv-structure-row.active {
-  background: rgba(47, 143, 214, 0.15);
+  background: rgba(34, 96, 255, 0.15);
   border-color: var(--color-primary);
   color: var(--text);
   font-weight: 600;
@@ -525,7 +550,7 @@ textarea { resize: vertical; min-height: 60px; }
   background: var(--color-surface);
   border: none;
   border-radius: var(--radius-card);
-  box-shadow: 0 1px 3px rgba(7, 7, 7, 0.08);
+  box-shadow: var(--shadow-card);
 }
 
 .screen-light h2 {
