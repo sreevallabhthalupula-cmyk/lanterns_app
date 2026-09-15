@@ -1,3 +1,16 @@
+@font-face {
+  font-family: 'League Spartan Regular';
+  src: url('fonts/LeagueSpartan-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'League Spartan SemiBold';
+  src: url('fonts/LeagueSpartan-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
   --bg: #0f1115;
@@ -12,6 +25,20 @@
   --warn: #e8a33d;
   --fail: #e74c3c;
   --urgent: #e74c3c;
+
+  /* Light-theme tokens (Medical Health Mobile App Figma kit) --
+     applied only within .screen-light (Home, Operator, Intake, History) */
+  --color-primary: #2260ff;
+  --color-primary-soft: #cad6ff;
+  --color-primary-faint: #ecf1ff;
+  --color-primary-muted: #809cff;
+  --color-surface: #ffffff;
+  --color-text: #070707;
+  --radius-input: 13px;
+  --radius-card: 17px;
+  --radius-button: 24px;
+  --font-heading: 'League Spartan SemiBold', sans-serif;
+  --font-body: 'League Spartan Regular', sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -460,3 +487,95 @@ textarea { resize: vertical; min-height: 60px; }
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
   cursor: pointer;
 }
+
+/* ---------------------------------------------------------------------
+   Light theme: Home, Operator Sign-In, Patient Intake, Case History
+   (Medical Health Mobile App Figma kit). Capture/quality-gate/case-detail
+   keep the existing dark theme.
+--------------------------------------------------------------------- */
+.screen-light { font-family: var(--font-body); color: var(--color-text); }
+
+.screen-light .card {
+  background: var(--color-surface);
+  border: none;
+  border-radius: var(--radius-card);
+  box-shadow: 0 1px 3px rgba(7, 7, 7, 0.08);
+}
+
+.screen-light h2 {
+  font-family: var(--font-heading);
+  font-weight: normal;
+  color: var(--color-primary);
+}
+.screen-light .card p.desc { color: var(--color-text); opacity: 0.6; }
+.screen-light label.field > span.label-text { color: var(--color-text); opacity: 0.6; }
+
+.screen-light input[type="text"],
+.screen-light input[type="number"],
+.screen-light select,
+.screen-light textarea {
+  background: var(--color-primary-faint);
+  border: none;
+  border-radius: var(--radius-input);
+  color: var(--color-text);
+}
+.screen-light input::placeholder,
+.screen-light textarea::placeholder {
+  color: var(--color-primary-muted);
+}
+
+.screen-light .radio-opt {
+  background: var(--color-primary-faint);
+  border: none;
+  border-radius: var(--radius-input);
+  color: var(--color-text);
+}
+.screen-light .radio-opt.checked {
+  background: var(--color-primary-soft);
+  border: none;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+.screen-light .radio-opt input { accent-color: var(--color-primary); }
+
+.screen-light .btn {
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-button);
+  min-height: 46px;
+  font-family: var(--font-heading);
+  font-weight: normal;
+}
+.screen-light .btn.secondary {
+  background: var(--color-primary-faint);
+  color: var(--color-primary);
+  border: none;
+}
+
+.screen-light .notice.info {
+  background: var(--color-primary-faint);
+  color: var(--color-primary);
+  border: none;
+}
+
+.screen-light .operator-label { color: var(--color-text); opacity: 0.55; }
+.screen-light .operator-name { color: var(--color-primary); font-family: var(--font-heading); font-weight: normal; }
+.screen-light .operator-meta { color: var(--color-text); opacity: 0.6; }
+
+/* Case History list rows -- direct lift of the kit's "Doctors" list-item pattern */
+.screen-light .case-list-item {
+  background: var(--color-primary-soft);
+  border: none;
+  border-radius: var(--radius-card);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.screen-light .case-list-item:last-child { margin-bottom: 0; }
+.screen-light .case-list-item .name {
+  color: var(--color-primary);
+  font-weight: 500;
+  font-family: var(--font-heading);
+}
+.screen-light .case-list-item .meta { color: var(--color-text); font-weight: 300; opacity: 0.7; }
+
+.screen-light .empty-state { color: var(--color-text); opacity: 0.5; }

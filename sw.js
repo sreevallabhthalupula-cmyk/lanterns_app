@@ -4,7 +4,7 @@
  * Bump CACHE_NAME whenever any cached file changes so clients pick up the
  * new version instead of serving stale files forever.
  */
-const CACHE_NAME = 'dr-pwa-shell-v7';
+const CACHE_NAME = 'dr-pwa-shell-v8';
 
 const APP_SHELL_FILES = [
   './',
@@ -35,6 +35,8 @@ const APP_SHELL_FILES = [
   './icons/icon-512.png',
   './icons/icon-maskable-192.png',
   './icons/icon-maskable-512.png',
+  './fonts/LeagueSpartan-Regular.woff2',
+  './fonts/LeagueSpartan-SemiBold.woff2',
 ];
 
 self.addEventListener('install', (event) => {
