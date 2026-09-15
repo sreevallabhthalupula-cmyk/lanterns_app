@@ -476,7 +476,7 @@ function runFundusPlausibilityCheck(source) {
 
   const signals = { vignette, opticDisc, vesselPattern, colorProfile };
   const passCount = Object.values(signals).filter((s) => s.pass).length;
-  const pass = passCount >= 3;
+  const pass = vignette.pass && passCount >= 3;
 
   return {
     pass,
