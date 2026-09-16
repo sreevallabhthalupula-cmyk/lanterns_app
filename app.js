@@ -8,9 +8,77 @@ const STORAGE_KEY = 'dr_pwa_cases';
 const OPERATOR_KEY = 'dr_pwa_operator';
 const MAX_STORED_IMAGE_DIM = 800; // downscale captured images before persisting to localStorage
 
-// Bump on every meaningful release; shown on Home (Section 4: version/changelog footer).
-const APP_VERSION = '1.3.0';
-const APP_LAST_UPDATED = '2026-09-15';
+// Bump on every meaningful release; shown on Home (Section 4: version/changelog footer)
+// and in the always-on corner build badge (see renderBuildBadge below).
+const APP_VERSION = '1.4.0';
+const APP_LAST_UPDATED = '2026-09-16';
+
+// ---------------------------------------------------------------------
+// Build badge + on-screen debug log
+//
+// The badge shows the ACTUAL live cache key(s) this browser has, read
+// fresh from the Cache Storage API every load -- not a hardcoded string
+// that could lie about what's really installed. If the badge still
+// shows an old cache name after a reload, the SW hasn't updated on that
+// device; if it shows the new one and a bug still reproduces, the bug
+// is real, not a caching illusion.
+//
+// Tapping the badge toggles an on-screen log panel (debugLog below) so
+// tap-routing issues can be diagnosed on a real phone with no devtools
+// access -- exactly the class of bug this exists for (a button visually
+// present but not actually receiving the tap).
+// ---------------------------------------------------------------------
+const DEBUG_OVERLAY_KEY = 'dr_pwa_debug_overlay';
+let debugOverlayOn = localStorage.getItem(DEBUG_OVERLAY_KEY) === '1';
+
+function debugLog(tag, data) {
+  const payload = typeof data === 'string' ? data : JSON.stringify(data);
+  console.log(`[debug:${tag}]`, data);
+  if (!debugOverlayOn) return;
+  const panel = document.getElementById('debugLogPanel');
+  const line = document.createElement('div');
+  const time = new Date().toLocaleTimeString();
+  line.innerHTML = `<span class="tag">[${time} ${escapeHtml(tag)}]</span> ${escapeHtml(payload)}`;
+  panel.appendChild(line);
+  panel.scrollTop = panel.scrollHeight;
+  while (panel.children.length > 40) panel.removeChild(panel.firstChild);
+}
+
+function setDebugOverlay(on) {
+  debugOverlayOn = on;
+  localStorage.setItem(DEBUG_OVERLAY_KEY, on ? '1' : '0');
+  document.getElementById('debugLogPanel').style.display = on ? 'block' : 'none';
+  document.getElementById('buildBadge').classList.toggle('debug-on', on);
+  if (typeof window !== 'undefined') window.FUNDUS_DEBUG = on;
+  if (on) {
+    document.getElementById('debugLogPanel').innerHTML = '';
+    debugLog('debug', 'On-screen debug log ON. Tap the badge again to hide.');
+  }
+}
+
+async function renderBuildBadge() {
+  const badge = document.getElementById('buildBadge');
+  let cacheInfo = 'no-cache-api';
+  try {
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      cacheInfo = keys.length ? keys.join(',') : 'no-cache-yet';
+    }
+  } catch (e) {
+    cacheInfo = 'cache-error';
+  }
+  let swState = 'no-sw';
+  try {
+    if ('serviceWorker' in navigator) {
+      const reg = await navigator.serviceWorker.getRegistration();
+      swState = reg ? (reg.active ? 'active' : 'installing') : 'unregistered';
+    }
+  } catch (e) {}
+  badge.textContent = `v${APP_VERSION} · sw:${swState} · ${cacheInfo}`;
+  badge.classList.toggle('debug-on', debugOverlayOn);
+  document.getElementById('debugLogPanel').style.display = debugOverlayOn ? 'block' : 'none';
+  badge.addEventListener('click', () => setDebugOverlay(!debugOverlayOn));
+}
 
 // ---------------------------------------------------------------------
 // Navigation
@@ -288,6 +356,7 @@ function stopCamera() {
 }
 
 document.getElementById('openCameraBtn').addEventListener('click', async () => {
+  debugLog('openCameraBtn.click', 'handler fired');
   try {
     cameraStream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: 'environment' },
@@ -298,6 +367,7 @@ document.getElementById('openCameraBtn').addEventListener('click', async () => {
     document.getElementById('captureChooser').style.display = 'none';
     document.getElementById('cameraArea').style.display = 'block';
   } catch (err) {
+    debugLog('openCameraBtn.click', 'getUserMedia failed: ' + err.message);
     alert('Could not access camera: ' + err.message + '\nUse "Upload Image" instead.');
   }
 });
@@ -319,11 +389,48 @@ document.getElementById('snapBtn').addEventListener('click', () => {
 });
 
 document.getElementById('chooseFileBtn').addEventListener('click', () => {
-  document.getElementById('fileInput').click();
+  const btn = document.getElementById('chooseFileBtn');
+  const input = document.getElementById('fileInput');
+
+  // Direct proof of an overlap issue: what element actually sits at the
+  // button's own center point, right now? If it isn't the button (or
+  // something inside it), a tap there is being intercepted before it
+  // ever reaches this handler -- though if THIS log line shows up at
+  // all, the tap already reached the handler on THIS device/browser.
+  const btnRect = btn.getBoundingClientRect();
+  const topElAtCenter = document.elementFromPoint(
+    btnRect.left + btnRect.width / 2,
+    btnRect.top + btnRect.height / 2
+  );
+  debugLog('chooseFileBtn.click', {
+    handlerFired: true,
+    topElementAtButtonCenter: topElAtCenter ? topElAtCenter.id || topElAtCenter.className || topElAtCenter.tagName : null,
+    topElementIsButton: topElAtCenter === btn || btn.contains(topElAtCenter),
+  });
+
+  const inputRect = input.getBoundingClientRect();
+  const cs = getComputedStyle(input);
+  debugLog('fileInput.beforeClick', {
+    rect: { x: Math.round(inputRect.x), y: Math.round(inputRect.y), w: Math.round(inputRect.width), h: Math.round(inputRect.height) },
+    display: cs.display,
+    visibility: cs.visibility,
+    opacity: cs.opacity,
+    zIndex: cs.zIndex,
+    pointerEvents: cs.pointerEvents,
+  });
+
+  input.click();
+  debugLog('fileInput.click()', 'called');
 });
 
 document.getElementById('fileInput').addEventListener('change', (e) => {
   const file = e.target.files[0];
+  debugLog('fileInput.change', {
+    fired: true,
+    fileCount: e.target.files.length,
+    name: file ? file.name : null,
+    type: file ? file.type : null,
+  });
   if (!file) return;
   const reader = new FileReader();
   reader.onload = (ev) => {
@@ -823,6 +930,7 @@ document.getElementById('welcomeSkipBtn').addEventListener('click', () => {
 // Welcome (first run) or straight to Operator/Home.
 // ---------------------------------------------------------------------
 document.getElementById('versionFooter').textContent = `v${APP_VERSION} · last updated ${APP_LAST_UPDATED}`;
+renderBuildBadge();
 
 (async function init() {
   const splashStart = Date.now();
