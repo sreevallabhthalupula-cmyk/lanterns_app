@@ -363,6 +363,22 @@ function onImageCaptured() {
   }
 }
 
+function renderFundusDebugPanel(fundusCheck) {
+  if (!window.FUNDUS_DEBUG) return '';
+  const rows = Object.entries(fundusCheck.signals)
+    .map(
+      ([name, s]) =>
+        `<tr><td>${escapeHtml(name)}</td><td>${s.pass ? 'PASS' : 'FAIL'}</td><td style="font-family:monospace;font-size:11px">${escapeHtml(JSON.stringify(s.detail))}</td></tr>`
+    )
+    .join('');
+  return `
+    <div class="card" style="margin-top:10px;padding:12px">
+      <h2 style="font-size:13px">Debug: fundus-check signal scores (passCount ${fundusCheck.passCount}/4, vignette mandatory)</h2>
+      <table class="kv-table" style="font-size:12px"><tr><td>signal</td><td>verdict</td><td>detail</td></tr>${rows}</table>
+    </div>
+  `;
+}
+
 function renderFundusCheckFailure(fundusCheck) {
   const el = document.getElementById('qualityResult');
   el.innerHTML = `
@@ -370,6 +386,7 @@ function renderFundusCheckFailure(fundusCheck) {
     <div class="btn-row">
       <button class="btn" id="retakeBtn">Retake Image</button>
     </div>
+    ${renderFundusDebugPanel(fundusCheck)}
   `;
   document.getElementById('retakeBtn').addEventListener('click', () => {
     resetCaptureScreen();

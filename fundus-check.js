@@ -24,10 +24,16 @@ const FUNDUS_CHECK_CONFIG = {
   MAX_ANALYSIS_DIMENSION: 512,
 
   // Signal 1: vignette
+  // Thresholds below were re-calibrated against 10 real fundus photos
+  // (mix of No_DR/Mild/Moderate/Severe/Proliferate_DR) after the original
+  // values -- tuned only against synthetic test images with an
+  // artificially hard black edge -- rejected 10/10 real images. Real
+  // fundus vignettes fade gradually over many rings and the edge is a
+  // dark reddish-brown, not near-black. See BLOCKERS.md for the numbers.
   VIGNETTE_RING_STEPS: 20, // radius samples from 0.5x to 1.0x of maxR
   VIGNETTE_ANGLE_SAMPLES: 72,
-  VIGNETTE_SHARP_DROP: 35, // min brightness drop between adjacent ring samples
-  VIGNETTE_DARK_EDGE_MAX: 30, // outermost ring must be darker than this
+  VIGNETTE_SHARP_DROP: 5, // min brightness drop between adjacent ring samples (was 35; real fundus: 6.7-45.9, hand/nose: ~1.1)
+  VIGNETTE_DARK_EDGE_MAX: 90, // outermost ring must be darker than this (was 30; real fundus: 0-67.1, hand/nose: 139-189)
   VIGNETTE_INTERIOR_MIN: 35, // r=0.5 ring must be brighter than this (not all-black photo)
 
   // Signal 2: optic disc
@@ -460,6 +466,25 @@ function round1(v) {
 // Combined check
 // ---------------------------------------------------------------------
 /**
+ * Debug mode: when true, every call logs each signal's pass/fail and its
+ * underlying detail scores to the console, and renderFundusCheckFailure()
+ * (app.js) shows the same breakdown in the rejection banner. Toggle from
+ * the console with `FUNDUS_DEBUG = true` or `localStorage.setItem('dr_pwa_fundus_debug','1')`.
+ */
+let FUNDUS_DEBUG = typeof localStorage !== 'undefined' && localStorage.getItem('dr_pwa_fundus_debug') === '1';
+
+function fcLogDebug(result) {
+  const { signals, passCount, pass } = result;
+  console.log(
+    `[fundus-check] verdict=${pass ? 'PASS' : 'FAIL'} passCount=${passCount}/4 (vignette mandatory)`
+  );
+  console.log('[fundus-check] vignette       :', signals.vignette.pass, signals.vignette.detail);
+  console.log('[fundus-check] opticDisc      :', signals.opticDisc.pass, signals.opticDisc.detail);
+  console.log('[fundus-check] vesselPattern  :', signals.vesselPattern.pass, signals.vesselPattern.detail);
+  console.log('[fundus-check] colorProfile   :', signals.colorProfile.pass, signals.colorProfile.detail);
+}
+
+/**
  * @param {HTMLCanvasElement|HTMLImageElement|HTMLVideoElement} source
  * @returns {{pass: boolean, reason: string|null, passCount: number, signals: object}}
  */
@@ -476,9 +501,15 @@ function runFundusPlausibilityCheck(source) {
 
   const signals = { vignette, opticDisc, vesselPattern, colorProfile };
   const passCount = Object.values(signals).filter((s) => s.pass).length;
-  const pass = vignette.pass && passCount >= 3;
+  // Real-image validation (see BLOCKERS.md) showed 3-of-4 was too strict --
+  // loosened to 2-of-4. Vignette stays mandatory: it's the one signal that
+  // reliably distinguishes an actual fundus-lens photo from a phone photo
+  // of literally anything else, so a real fundus image failing it would be
+  // a lens/capture problem worth surfacing, not something to paper over by
+  // just counting it as one of many equally-weighted votes.
+  const pass = vignette.pass && passCount >= 2;
 
-  return {
+  const result = {
     pass,
     reason: pass
       ? null
@@ -486,9 +517,22 @@ function runFundusPlausibilityCheck(source) {
     passCount,
     signals,
   };
+
+  if (FUNDUS_DEBUG) fcLogDebug(result);
+
+  return result;
 }
 
 if (typeof window !== 'undefined') {
   window.runFundusPlausibilityCheck = runFundusPlausibilityCheck;
   window.FUNDUS_CHECK_CONFIG = FUNDUS_CHECK_CONFIG;
+  Object.defineProperty(window, 'FUNDUS_DEBUG', {
+    get: () => FUNDUS_DEBUG,
+    set: (v) => {
+      FUNDUS_DEBUG = !!v;
+      try {
+        localStorage.setItem('dr_pwa_fundus_debug', FUNDUS_DEBUG ? '1' : '0');
+      } catch (e) {}
+    },
+  });
 }
