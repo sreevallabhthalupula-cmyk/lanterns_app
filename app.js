@@ -211,6 +211,7 @@ document.getElementById('viewDashboardBtn').addEventListener('click', () => {
 
 document.getElementById('exportCsvBtn').addEventListener('click', exportCasesAsCSV);
 document.getElementById('exportJsonBtn').addEventListener('click', exportCasesAsJSON);
+document.getElementById('homeExportBtn').addEventListener('click', exportCasesAsCSV);
 
 /** Client-side aggregation over saved cases (Section 4: Facility dashboard). */
 function renderDashboard() {
